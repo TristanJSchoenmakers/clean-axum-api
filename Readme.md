@@ -1,9 +1,7 @@
-# Clean Rust
-
 A cleanly designed rust REST Api
 
 
-### prerequisites
+## prerequisites
 
 - Cargo
 - Docker
@@ -11,7 +9,7 @@ A cleanly designed rust REST Api
 - Diesel_CLI
 
 
-### Getting started
+## Getting started
 
 
 ##### 1 - Run required docker containers
@@ -31,7 +29,7 @@ diesel migration run --database-url postgresql://postgres:example@localhost:5432
 ##### 3 - Run the application
 
 
-### Testing
+## Testing
 
 ``` bash
 # Get all blogs
