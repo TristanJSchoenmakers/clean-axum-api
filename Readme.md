@@ -1,42 +1,22 @@
-A cleanly designed rust REST Api
-
-
-## prerequisites
-
-- Cargo
-- Docker
-- Docker-compose
-- Diesel_CLI
+A cleanly designed Rust REST Api
 
 
 ## Getting started
 
+**Prerequisites:**
 
-##### 1 - Run required docker containers
+- [cargo](https://www.rust-lang.org/tools/install)
+- [cargo-make](https://github.com/sagiegurari/cargo-make#installation)
+- [docker (compose)](https://docs.docker.com/engine/install/)
+
+#### 1 - Initialize
 
 ``` bash
-docker-compose up
+cargo make init
 ```
 
-
-##### 2 - Run database migrations
-
-``` bash
-diesel migration run --database-url postgresql://postgres:example@localhost:5432/postgres
-```
-
-
-##### 3 - Run the application
-
-
-## Testing
+#### 2 - Run API
 
 ``` bash
-# Get all blogs
-curl http://localhost:8000/blog
-```
-
-``` bash
-# Create blog
-curl -d '{"id": 1,"title":"my_title", "body": "my_body", "published": true}' http://localhost:8000/blog
+cargo make run
 ```
