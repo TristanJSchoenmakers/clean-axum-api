@@ -1,0 +1,6 @@
+[alias]
+xtask = "run --package xtask --"
+api = "run --package api --"
+
+[env]
+DATABASE_URL = "postgres://postgres:example@localhost/mytest"

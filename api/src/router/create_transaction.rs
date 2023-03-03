@@ -1,5 +1,3 @@
-#![doc = include_str!("../../docs/CreateUser.md")]
-
 use axum::{response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
@@ -20,12 +18,12 @@ pub async fn create_user(
 ) -> impl IntoResponse {
     println!("Create User Request: {}", body.lastname);
 
-    sqlx::query!(
-        r#"INSERT INTO public.transaction (transaction_id, lastname)
-            VALUES(gen_random_uuid(), 'wat');
-        "#
-    )
-    .execute(&mut db);
+    // sqlx::query!(
+    //     r#"INSERT INTO public.transaction (transaction_id, lastname)
+    //         VALUES(gen_random_uuid(), 'wat');
+    //     "#
+    // )
+    // .execute(&mut db);
 
     let row: (i64,) = sqlx::query_as("SELECT $1")
         .bind(150_i64)

@@ -2,8 +2,8 @@
 //!
 //! ![](https://www.plantuml.com/plantuml/png/SoWkIImgAStDuNBAJrBGjLDmpCbCJbMmKiX8pSd9vt98pKi1IW80)
 
+use api::{database, router};
 use axum::Extension;
-use clean_rust::{database, router};
 
 #[tokio::main]
 async fn main() {
