@@ -22,6 +22,13 @@ fn main() {
         .unwrap();
 
     // 4. Run seeds
+
+    // sqlx::query!(
+    //     r#"INSERT INTO public.transaction (transaction_id, lastname)
+    //         VALUES(gen_random_uuid(), 'wat');
+    //     "#
+    // )
+    // .execute(&mut db);
     // cmd!(sh, "sqlx migrate run --source api/seeds")
     //     .run()
     //     .unwrap();
