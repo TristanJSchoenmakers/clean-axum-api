@@ -1,46 +1,47 @@
-use axum::{response::IntoResponse, Json};
+use axum::Json;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
+use crate::domain::todo_item::{PriorityLevel, TodoItem};
+
 #[derive(Deserialize)]
 pub struct CreateTodoItemRequest {
-    lastname: String,
+    title: String,
+    note: String,
+    priority: PriorityLevel,
 }
 
 #[derive(Serialize)]
 pub struct CreateTodoItemResponse {
-    user_id: i32,
+    todo_item_id: String,
 }
 
 pub async fn create_todo_item(
     db: axum::Extension<PgPool>,
     Json(body): Json<CreateTodoItemRequest>,
-) -> impl IntoResponse {
-    println!("Create User Request: {}", body.lastname);
+) -> Result<Json<CreateTodoItemResponse>, String> {
+    let todo_item = TodoItem::try_create(body.title, body.note, body.priority);
 
-    // sqlx::query!(
-    //     r#"INSERT INTO public.transaction (transaction_id, lastname)
-    //         VALUES(gen_random_uuid(), 'wat');
-    //     "#
-    // )
-    // .execute(&mut db);
+    let db_result = sqlx::query!(
+        r#"
+            INSERT INTO todo_items (id, list_id, title, note, priority, reminder, done)
+            VALUES ($1, $2, $3, $4, $5, '2023-03-20 12:00:00', false);
+        "#,
+        todo_item.id,
+        todo_item.list_id,
+        todo_item.title,
+        todo_item.note,
+        todo_item.priority as _
+    )
+    .execute(&*db)
+    .await;
 
-    let row: (i64,) = sqlx::query_as("SELECT $1")
-        .bind(150_i64)
-        .fetch_one(&*db)
-        .await
-        .unwrap();
+    if let Err(i) = db_result {
+        println!("Matched {:?}!", i);
+        return Err(String::from("Something Went wrong!"));
+    }
 
-    println!("QUERY RESULT: {}", row.0);
-
-    //INSERT INTO public."transaction"
-    //(transaction_id, lastname)
-    //VALUES(gen_random_uuid(), 'wat');
-    //let _v: Result<CreateUserRequest, serde_json::Error> = serde_json::from_str(&body);
-
-    /*if let Err(w) = v {
-        return Json("wtf");
-    }*/
-
-    Json(CreateTodoItemResponse { user_id: 73 })
+    Ok(Json(CreateTodoItemResponse {
+        todo_item_id: todo_item.id.to_string(),
+    }))
 }

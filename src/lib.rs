@@ -20,7 +20,7 @@ pub mod routes {
     pub fn app() -> Router {
         Router::new()
             .route("/", get(index))
-            .route("/transaction", post(create_todo_item::create_todo_item))
+            .route("/todoitem", post(create_todo_item::create_todo_item))
     }
 
     async fn index() -> &'static str {
