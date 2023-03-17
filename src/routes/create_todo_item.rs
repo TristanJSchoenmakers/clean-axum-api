@@ -3,18 +3,18 @@ use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
 #[derive(Deserialize)]
-pub struct CreateUserRequest {
+pub struct CreateTodoItemRequest {
     lastname: String,
 }
 
 #[derive(Serialize)]
-pub struct CreateUserResponse {
+pub struct CreateTodoItemResponse {
     user_id: i32,
 }
 
-pub async fn create_user(
+pub async fn create_todo_item(
     db: axum::Extension<PgPool>,
-    Json(body): Json<CreateUserRequest>,
+    Json(body): Json<CreateTodoItemRequest>,
 ) -> impl IntoResponse {
     println!("Create User Request: {}", body.lastname);
 
@@ -42,5 +42,5 @@ pub async fn create_user(
         return Json("wtf");
     }*/
 
-    Json(CreateUserResponse { user_id: 73 })
+    Json(CreateTodoItemResponse { user_id: 73 })
 }

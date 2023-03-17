@@ -8,14 +8,8 @@ A cleanly designed Rust REST Api
 - [cargo](https://www.rust-lang.org/tools/install)
 - [docker (compose)](https://docs.docker.com/engine/install/)
 
-#### 1 - Initialize
+#### Initialize
 
 ``` bash
 cargo xtask
-```
-
-#### 2 - Run API
-
-``` bash
-cargo api
 ```

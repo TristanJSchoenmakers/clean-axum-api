@@ -10,26 +10,9 @@ fn main() {
     // 1. Run docker compose
     cmd!(sh, "docker compose up --detach").run().unwrap();
 
-    // 2. Create database
+    // 2. Setup database
     if cmd!(sh, "cargo sqlx --help").read().is_err() {
         cmd!(sh, "cargo install sqlx-cli").run().unwrap();
     };
-    cmd!(sh, "sqlx database create").run().unwrap();
-
-    // 3. Run migrations
-    cmd!(sh, "sqlx migrate run --source api/migrations")
-        .run()
-        .unwrap();
-
-    // 4. Run seeds
-
-    // sqlx::query!(
-    //     r#"INSERT INTO public.transaction (transaction_id, lastname)
-    //         VALUES(gen_random_uuid(), 'wat');
-    //     "#
-    // )
-    // .execute(&mut db);
-    // cmd!(sh, "sqlx migrate run --source api/seeds")
-    //     .run()
-    //     .unwrap();
+    cmd!(sh, "sqlx database setup").run().unwrap();
 }
