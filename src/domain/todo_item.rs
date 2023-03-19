@@ -1,22 +1,23 @@
 use chrono::{DateTime, Utc};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+#[derive(Serialize)]
 pub struct TodoItem {
     pub id: Uuid,
     pub list_id: Uuid,
     /// Title for the TodoItem
     pub title: String,
-    pub note: String,
+    pub note: Option<String>,
     pub priority: PriorityLevel,
     pub reminder: Option<DateTime<Utc>>,
     pub done: bool,
-    pub created: DateTime<Utc>,
-    pub last_modified: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 impl TodoItem {
-    pub fn try_create(title: String, note: String, priority: PriorityLevel) -> Self {
+    pub fn try_create(title: String, note: Option<String>, priority: PriorityLevel) -> Self {
         TodoItem {
             id: Uuid::new_v4(),
             list_id: Uuid::new_v4(),
@@ -25,17 +26,19 @@ impl TodoItem {
             priority,
             reminder: None,
             done: false,
-            created: Utc::now(),
-            last_modified: Utc::now(),
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
         }
     }
 }
 
-#[derive(Deserialize, sqlx::Type)]
-#[sqlx(type_name = "PRIORITY")]
+// #[derive(Deserialize, sqlx::Type)]
+// #[sqlx(type_name = "PRIORITY")]
+#[derive(Deserialize, Serialize, sqlx::Type)]
+#[repr(i32)]
 pub enum PriorityLevel {
-    None,
-    Low,
-    Medium,
-    High,
+    None = 0,
+    Low = 1,
+    Medium = 2,
+    High = 3,
 }

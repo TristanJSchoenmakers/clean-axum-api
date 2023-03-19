@@ -1,13 +1,12 @@
+use crate::domain::todo_item::{PriorityLevel, TodoItem};
 use axum::Json;
 use serde::{Deserialize, Serialize};
-use sqlx::PgPool;
-
-use crate::domain::todo_item::{PriorityLevel, TodoItem};
+use sqlx::{postgres::PgQueryResult, PgPool};
 
 #[derive(Deserialize)]
 pub struct CreateTodoItemRequest {
     title: String,
-    note: String,
+    note: Option<String>,
     priority: PriorityLevel,
 }
 
@@ -21,8 +20,7 @@ pub async fn create_todo_item(
     Json(body): Json<CreateTodoItemRequest>,
 ) -> Result<Json<CreateTodoItemResponse>, String> {
     let todo_item = TodoItem::try_create(body.title, body.note, body.priority);
-
-    let db_result = sqlx::query!(
+    let db_result: Result<PgQueryResult, sqlx::Error> = sqlx::query!(
         r#"
             INSERT INTO todo_items (id, list_id, title, note, priority, reminder, done)
             VALUES ($1, $2, $3, $4, $5, '2023-03-20 12:00:00', false);
@@ -40,7 +38,6 @@ pub async fn create_todo_item(
         println!("Matched {:?}!", i);
         return Err(String::from("Something Went wrong!"));
     }
-
     Ok(Json(CreateTodoItemResponse {
         todo_item_id: todo_item.id.to_string(),
     }))
