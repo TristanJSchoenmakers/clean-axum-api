@@ -2,6 +2,7 @@ use crate::domain::todo_item::{PriorityLevel, TodoItem};
 use axum::Json;
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgQueryResult, PgPool};
+use thiserror::Error;
 
 #[derive(Deserialize)]
 pub struct CreateTodoItemRequest {
@@ -15,11 +16,22 @@ pub struct CreateTodoItemResponse {
     todo_item_id: String,
 }
 
+#[derive(Error, Debug)]
+pub enum CreateTodoItemError {
+    #[error("Failed to create todo item")]
+    InvalidTodoItem,
+
+    #[error("Database error")]
+    DatabaseError,
+}
+
 pub async fn create_todo_item(
     db: axum::Extension<PgPool>,
     Json(body): Json<CreateTodoItemRequest>,
 ) -> Result<Json<CreateTodoItemResponse>, String> {
-    let todo_item = TodoItem::try_create(body.title, body.note, body.priority);
+    let todo_item = TodoItem::try_create(body.title, body.note, body.priority)
+        .map_err(|_| CreateTodoItemError::InvalidTodoItem.to_string())?;
+
     let db_result: Result<PgQueryResult, sqlx::Error> = sqlx::query!(
         r#"
             INSERT INTO todo_items (id, list_id, title, note, priority, reminder, done)
@@ -34,10 +46,11 @@ pub async fn create_todo_item(
     .execute(&*db)
     .await;
 
-    if let Err(i) = db_result {
-        println!("Matched {:?}!", i);
-        return Err(String::from("Something Went wrong!"));
+    if let Err(e) = db_result {
+        println!("Matched {:?}!", e);
+        return Err(CreateTodoItemError::DatabaseError.to_string());
     }
+
     Ok(Json(CreateTodoItemResponse {
         todo_item_id: todo_item.id.to_string(),
     }))

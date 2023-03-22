@@ -17,7 +17,6 @@ pub async fn get_todo_item(
         todo_item_id
     )
     .fetch_one(&*db)
-    // .fetch_all(&*db)
     .await;
 
     match db_result {
@@ -27,6 +26,4 @@ pub async fn get_todo_item(
             return Err(String::from("Something Went wrong!"));
         }
     }
-
-    // Ok(Json(db_result))
 }

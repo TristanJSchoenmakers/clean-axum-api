@@ -1,7 +1,3 @@
-//! My Clean Rust API project
-//!
-//! ![](https://www.plantuml.com/plantuml/png/SoWkIImgAStDuNBAJrBGjLDmpCbCJbMmKiX8pSd9vt98pKi1IW80)
-
 /// Handles the database
 pub mod database;
 

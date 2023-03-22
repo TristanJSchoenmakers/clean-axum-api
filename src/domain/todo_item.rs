@@ -1,7 +1,11 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 use uuid::Uuid;
 
+/// TodoItem represents a single item in a to-do list.
+///
+/// It contains information such as title, note, priority level, reminder, and status.
 #[derive(Serialize)]
 pub struct TodoItem {
     pub id: Uuid,
@@ -16,9 +20,30 @@ pub struct TodoItem {
     pub updated_at: DateTime<Utc>,
 }
 
+/// Represents errors that can occur when creating a TodoItem.
+#[derive(Error, Debug)]
+pub enum CreateTodoItemError {
+    /// Error occurs when a TodoItem fails validation.
+    #[error("Failed to create todo item")]
+    InvalidTodoItem,
+
+    /// Error occurs during database operations.
+    #[error("Database error: {0}")]
+    DatabaseError(sqlx::Error),
+}
+
 impl TodoItem {
-    pub fn try_create(title: String, note: Option<String>, priority: PriorityLevel) -> Self {
-        TodoItem {
+    /// Tries to create a new TodoItem with the provided title, note, and priority.
+    pub fn try_create(
+        title: String,
+        note: Option<String>,
+        priority: PriorityLevel,
+    ) -> Result<Self, CreateTodoItemError> {
+        if title.trim().is_empty() || title.len() > 100 {
+            return Err(CreateTodoItemError::InvalidTodoItem);
+        }
+
+        Ok(TodoItem {
             id: Uuid::new_v4(),
             list_id: Uuid::new_v4(),
             title,
@@ -28,7 +53,7 @@ impl TodoItem {
             done: false,
             created_at: Utc::now(),
             updated_at: Utc::now(),
-        }
+        })
     }
 }
 
