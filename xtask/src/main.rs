@@ -8,6 +8,10 @@ fn main() {
     sh.change_dir(my_path);
 
     // 1. Run docker compose
+    if cmd!(sh, "docker compose --help").read().is_err() {
+        eprintln!("Cannot find docker compose, is docker compose not installed?");
+        std::process::exit(-1);
+    };
     cmd!(sh, "docker compose up --detach").run().unwrap();
 
     // 2. Setup database
