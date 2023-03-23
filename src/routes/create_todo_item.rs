@@ -16,13 +16,16 @@ pub struct CreateTodoItemResponse {
     todo_item_id: String,
 }
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Serialize)]
 pub enum CreateTodoItemError {
     #[error("Failed to create todo item")]
     InvalidTodoItem,
 
-    #[error("Database error")]
-    DatabaseError,
+    #[error("Todo Item with Id not found")]
+    TodoItemNotFound,
+
+    #[error("Internal Server Error")]
+    InternalServerError,
 }
 
 pub async fn create_todo_item(
@@ -47,8 +50,15 @@ pub async fn create_todo_item(
     .await;
 
     if let Err(e) = db_result {
-        println!("Matched {:?}!", e);
-        return Err(CreateTodoItemError::DatabaseError.to_string());
+        match e {
+            sqlx::Error::RowNotFound => {
+                return Err(CreateTodoItemError::TodoItemNotFound.to_string())
+            }
+            _ => {
+                println!("Matched {:?}!", e);
+                return Err(CreateTodoItemError::InternalServerError.to_string());
+            }
+        }
     }
 
     Ok(Json(CreateTodoItemResponse {

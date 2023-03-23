@@ -16,12 +16,7 @@ pub mod routes {
 
     pub fn app() -> Router {
         Router::new()
-            .route("/", get(index))
             .route("/todoitem/:todo_item_id", get(get_todo_item::get_todo_item))
             .route("/todoitem", post(create_todo_item::create_todo_item))
-    }
-
-    async fn index() -> &'static str {
-        "Hello!"
     }
 }

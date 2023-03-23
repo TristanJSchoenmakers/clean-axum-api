@@ -26,10 +26,6 @@ pub enum CreateTodoItemError {
     /// Error occurs when a TodoItem fails validation.
     #[error("Failed to create todo item")]
     InvalidTodoItem,
-
-    /// Error occurs during database operations.
-    #[error("Database error: {0}")]
-    DatabaseError(sqlx::Error),
 }
 
 impl TodoItem {
