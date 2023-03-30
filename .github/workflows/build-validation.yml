@@ -5,17 +5,33 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+    
+
 
 env:
   CARGO_TERM_COLOR: always
+  
+
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
     
-    env:
-      FORCE_IGNORE_VALIDATION: 1
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: api
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
       
     steps:
     - uses: actions/checkout@v3
