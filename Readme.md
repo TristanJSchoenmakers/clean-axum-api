@@ -17,8 +17,18 @@ A cleanly designed Rust REST Api
 - [cargo](https://www.rust-lang.org/tools/install)
 - [docker (compose)](https://docs.docker.com/engine/install/)
 
+
 #### Initialize
 
 ``` bash
-cargo xtask
+cargo xtask init
+```
+
+Run `cargo xtask --help` for a list of the other xtask commands
+
+
+#### run the api
+
+``` bash
+cargo xtask run
 ```

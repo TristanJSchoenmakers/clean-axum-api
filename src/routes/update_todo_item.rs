@@ -67,12 +67,10 @@ pub async fn update_todo_item(
     match db_result {
         Ok(_) => Ok(Json(UpdateTodoItemResponse { success: true })),
         Err(e) => match e {
-            sqlx::Error::RowNotFound => {
-                return Err(UpdateTodoItemError::TodoItemNotFound.to_string())
-            }
+            sqlx::Error::RowNotFound => Err(UpdateTodoItemError::TodoItemNotFound.to_string()),
             _ => {
                 println!("Matched {:?}!", e);
-                return Err(UpdateTodoItemError::InternalServerError.to_string());
+                Err(UpdateTodoItemError::InternalServerError.to_string())
             }
         },
     }

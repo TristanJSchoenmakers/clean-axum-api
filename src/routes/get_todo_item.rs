@@ -33,10 +33,10 @@ pub async fn get_todo_item(
     match db_result {
         Ok(r) => Ok(Json(r)),
         Err(e) => match e {
-            sqlx::Error::RowNotFound => return Err(GetTodoItemError::TodoItemNotFound.to_string()),
+            sqlx::Error::RowNotFound => Err(GetTodoItemError::TodoItemNotFound.to_string()),
             _ => {
                 println!("Matched {:?}!", e);
-                return Err(GetTodoItemError::InternalServerError.to_string());
+                Err(GetTodoItemError::InternalServerError.to_string())
             }
         },
     }
