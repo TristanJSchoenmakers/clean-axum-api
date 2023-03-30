@@ -18,7 +18,7 @@ Prerequisites:
 - [docker (compose)](https://docs.docker.com/engine/install/)
 
 
-#### Initialize
+### Initialize
 
 Run `cargo xtask --help` for a list of the other xtask commands
 
@@ -28,7 +28,7 @@ cargo xtask init
 
 
 
-#### running the API
+### running the API
 
 ``` bash
 cargo run
