@@ -1,4 +1,4 @@
-name: Rust
+name: build-validation
 
 on:
   push:
@@ -11,7 +11,7 @@ env:
   DATABASE_URL: postgres://postgres:password@localhost/api
 
 jobs:
-  build_and_validate:
+  build-validation:
     name: Build and Validate
     runs-on: ubuntu-latest
 
