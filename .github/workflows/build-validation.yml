@@ -12,7 +12,7 @@ env:
 
 jobs:
   build-validation:
-    name: Build and Validate
+    name: build-validation
     runs-on: ubuntu-latest
 
     services:
