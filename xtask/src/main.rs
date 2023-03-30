@@ -5,8 +5,8 @@ use clap::Parser;
 
 /// cargo-xtask adds automation to a Rust project, see: https://github.com/matklad/cargo-xtask
 #[derive(Parser)]
-#[clap(name = "cargo")]
-#[clap(bin_name = "cargo")]
+#[clap(name = "cargo xtask")]
+#[clap(bin_name = "cargo xtask")]
 enum Cargo {
     /// Initializes the project by running the required docker containers & migrating the database
     Init,
@@ -15,19 +15,18 @@ enum Cargo {
 }
 
 fn main() {
-    let parser = Cargo::parse();
-    match parser {
-        Cargo::Init => init(),
-        Cargo::Check => check(),
-    }
-}
-
-fn init() {
     let emp = &env::var("CARGO_MANIFEST_DIR").unwrap();
     let my_path = Path::new(emp).parent().unwrap();
     let sh = &Shell::new().unwrap();
     sh.change_dir(my_path);
 
+    match Cargo::parse() {
+        Cargo::Init => init(sh),
+        Cargo::Check => check(sh),
+    }
+}
+
+fn init(sh: &Shell) {
     // 1. Run docker compose
     if cmd!(sh, "docker compose --help").read().is_err() {
         eprintln!("Cannot find docker compose, is docker compose not installed?");
@@ -42,12 +41,7 @@ fn init() {
     cmd!(sh, "sqlx database setup").run().unwrap();
 }
 
-fn check() {
-    let emp = &env::var("CARGO_MANIFEST_DIR").unwrap();
-    let my_path = Path::new(emp).parent().unwrap();
-    let sh = &Shell::new().unwrap();
-    sh.change_dir(my_path);
-
+fn check(sh: &Shell) {
     // 1. Check for clippy analyzer warnings/errors
     cmd!(
         sh,
