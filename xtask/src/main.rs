@@ -49,7 +49,12 @@ fn check() {
     sh.change_dir(my_path);
 
     // 1. Check for clippy analyzer warnings/errors
-    cmd!(sh, "cargo clippy -- -D warnings").run().unwrap();
+    cmd!(
+        sh,
+        "cargo clippy --all-targets --all-features -- -D warnings"
+    )
+    .run()
+    .unwrap();
 
     // 2. Check if project is formatted correctly
     cmd!(sh, "cargo fmt --check").run().unwrap();
