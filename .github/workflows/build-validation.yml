@@ -53,6 +53,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-build-target-
 
+    - name: Set DATABASE_URL environment variable
+      run: echo "postgres://postgres:password@localhost/api" >> $GITHUB_ENV
+
     - name: Install SQLx CLI
       run: cargo install --version=0.5.7 sqlx-cli
 
