@@ -15,9 +15,9 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: sqlx
-          POSTGRES_PASSWORD: sqlx
-          POSTGRES_DB: sqlx
+          POSTGRES_USER: posgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: api
         ports:
           - 5432:5432
         options: >-
