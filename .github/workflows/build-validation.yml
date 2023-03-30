@@ -2,29 +2,22 @@ name: Rust
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [main]
   pull_request:
-    branches: [ "master" ]
-    
-
-
-env:
-  CARGO_TERM_COLOR: always
-  
-
+    branches: [main]
 
 jobs:
-  build:
-
+  build_and_validate:
+    name: Build and Validate
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: api
+          POSTGRES_USER: sqlx
+          POSTGRES_PASSWORD: sqlx
+          POSTGRES_DB: sqlx
         ports:
           - 5432:5432
         options: >-
@@ -32,10 +25,61 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      
+
     steps:
-    - uses: actions/checkout@v3
-    - name: Build
-      run: cargo build --verbose
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+
+    - name: Cache Cargo dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+
+    - name: Cache build artifacts
+      uses: actions/cache@v2
+      with:
+        path: target
+        key: ${{ runner.os }}-build-target-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-build-target-
+
+    - name: Set DATABASE_URL environment variable
+      run: echo "DATABASE_URL=postgres://sqlx:sqlx@localhost:5432/sqlx" >> $GITHUB_ENV
+
+    - name: Install SQLx CLI
+      run: cargo install --version=0.5.7 sqlx-cli
+
+    - name: Run database migrations
+      run: sqlx migrate run
+
+    - name: Build project
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --release
+
     - name: Run tests
-      run: cargo test --verbose
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --release
+
+    - name: Check formatting
+      run: |
+        rustup component add rustfmt
+        cargo fmt --all -- --check
+
+    - name: Clippy lint
+      run: |
+        rustup component add clippy
+        cargo clippy --all-targets --all-features -- -D warnings
