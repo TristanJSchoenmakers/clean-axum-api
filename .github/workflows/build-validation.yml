@@ -1,0 +1,86 @@
+name: Rust
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  CARGO_TERM_COLOR: always
+  DATABASE_URL: postgres://postgres:password@localhost/api
+
+jobs:
+  build_and_validate:
+    name: Build and Validate
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: api
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+
+    - name: Cache Cargo dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+
+    - name: Cache build artifacts
+      uses: actions/cache@v2
+      with:
+        path: target
+        key: ${{ runner.os }}-build-target-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-build-target-
+
+    - name: Install SQLx CLI
+      run: cargo install --version=0.5.7 sqlx-cli
+
+    - name: Run database migrations
+      run: sqlx migrate run
+
+    - name: Build project
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --release
+
+    - name: Run tests
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --release
+
+    - name: Check formatting
+      run: |
+        rustup component add rustfmt
+        cargo fmt --all -- --check
+
+    - name: Clippy lint
+      run: |
+        rustup component add clippy
+        cargo clippy --all-targets --all-features -- -D warnings
