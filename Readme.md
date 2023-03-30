@@ -20,15 +20,16 @@ A cleanly designed Rust REST Api
 
 #### Initialize
 
+Run `cargo xtask --help` for a list of the other xtask commands
+
 ``` bash
 cargo xtask init
 ```
 
-Run `cargo xtask --help` for a list of the other xtask commands
 
 
-#### run the api
+#### running the API
 
 ``` bash
-cargo xtask run
+cargo run
 ```
