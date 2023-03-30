@@ -28,7 +28,7 @@ cargo xtask init
 
 
 
-### running the API
+### Running the API
 
 ``` bash
 cargo run
