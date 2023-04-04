@@ -35,7 +35,7 @@ impl TodoItem {
         note: Option<String>,
         priority: PriorityLevel,
     ) -> Result<Self, CreateTodoItemError> {
-        if title.trim().is_empty() || title.len() > 100 {
+        if title.trim().is_empty() || title.chars().count() > 25 {
             return Err(CreateTodoItemError::InvalidTodoItem);
         }
 

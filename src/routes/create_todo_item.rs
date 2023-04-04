@@ -1,4 +1,5 @@
 use crate::domain::todo_item::{PriorityLevel, TodoItem};
+use axum::http::StatusCode;
 use axum::Json;
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgQueryResult, PgPool};
@@ -19,7 +20,7 @@ pub struct CreateTodoItemResponse {
 /// Errors that can happen in the create_todo_item route
 #[derive(Error, Debug)]
 pub enum CreateTodoItemError {
-    #[error("Failed to create todo item")]
+    #[error("Invalid Todo Item")]
     InvalidTodoItem,
 
     #[error("Internal Server Error")]
@@ -29,9 +30,13 @@ pub enum CreateTodoItemError {
 pub async fn create_todo_item(
     db: axum::Extension<PgPool>,
     Json(body): Json<CreateTodoItemRequest>,
-) -> Result<Json<CreateTodoItemResponse>, String> {
-    let todo_item = TodoItem::try_create(body.title, body.note, body.priority)
-        .map_err(|_| CreateTodoItemError::InvalidTodoItem.to_string())?;
+) -> Result<Json<CreateTodoItemResponse>, (StatusCode, String)> {
+    let todo_item = TodoItem::try_create(body.title, body.note, body.priority).map_err(|_| {
+        (
+            StatusCode::BAD_REQUEST,
+            CreateTodoItemError::InvalidTodoItem.to_string(),
+        )
+    })?;
 
     let db_result: Result<PgQueryResult, sqlx::Error> = sqlx::query!(
         r#"
@@ -53,10 +58,93 @@ pub async fn create_todo_item(
 
     if let Err(e) = db_result {
         println!("Matched {:?}!", e);
-        return Err(CreateTodoItemError::InternalServerError.to_string());
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            CreateTodoItemError::InternalServerError.to_string(),
+        ));
     }
 
     Ok(Json(CreateTodoItemResponse {
         todo_item_id: todo_item.id.to_string(),
     }))
+}
+
+#[cfg(test)]
+mod tests {
+    use axum::{body::Body, http::Request};
+    use hyper::{header, Method, StatusCode};
+    use tower::ServiceExt;
+
+    #[tokio::test]
+    async fn correct_request() {
+        let app = crate::test_util::setup_axum().await;
+        let request = Request::builder()
+            .method(Method::POST)
+            .uri("/todoitem")
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(
+                r#"{
+                    "title": "no one",
+                    "note": "my note",
+                    "priority": "Medium"
+                }"#,
+            ))
+            .unwrap();
+
+        let response = app.oneshot(request).await.unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = hyper::body::to_bytes(response.into_body()).await.unwrap();
+        let body = String::from_utf8_lossy(&body[..]);
+        assert!(body.contains(r#"{"todo_item_id":""#));
+    }
+
+    #[tokio::test]
+    async fn incorrect_request() {
+        let app = crate::test_util::setup_axum().await;
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method(Method::POST)
+                    .uri("/todoitem")
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .body(Body::from(
+                        r#"{
+                          "note": "my note",
+                          "priority": "Medium"
+                        }"#,
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn invalid_domain() {
+        let app = crate::test_util::setup_axum().await;
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method(Method::POST)
+                    .uri("/todoitem")
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .body(Body::from(
+                        r#"{
+                          "title": "TO LONG TITLE, TO LONG TITLE, TO LONG TITLE, TO LONG TITLE, TO LONG TITLE, TO LONG TITLE, TO LONG TITLE, TO LONG TITLE",
+                          "note": "my note",
+                          "priority": "Medium"
+                        }"#,
+                    ))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
 }

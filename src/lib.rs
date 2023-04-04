@@ -26,3 +26,14 @@ pub mod routes {
             )
     }
 }
+
+#[cfg(test)]
+mod test_util {
+    use super::database::initialize_database;
+    use axum::{Extension, Router};
+
+    pub async fn setup_axum() -> Router {
+        let db = initialize_database().await.unwrap();
+        crate::routes::app().layer(Extension(db))
+    }
+}
