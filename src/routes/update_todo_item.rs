@@ -59,11 +59,6 @@ pub async fn update_todo_item(
     .execute(&*db)
     .await;
 
-    if let Err(e) = db_result {
-        println!("Matched {:?}!", e);
-        return Err(UpdateTodoItemError::InternalServerError.to_string());
-    }
-
     match db_result {
         Ok(_) => Ok(Json(UpdateTodoItemResponse { success: true })),
         Err(e) => match e {

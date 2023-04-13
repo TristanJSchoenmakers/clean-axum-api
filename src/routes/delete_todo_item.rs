@@ -1,7 +1,13 @@
-use axum::extract::Path;
+use axum::{extract::Path, Json};
+use serde::Serialize;
 use sqlx::{postgres::PgQueryResult, PgPool};
 use thiserror::Error;
 use uuid::Uuid;
+
+#[derive(Serialize)]
+pub struct DeleteTodoItemResponse {
+    success: bool,
+}
 
 /// Errors that can happen in the delete_todo_item route
 #[derive(Error, Debug)]
@@ -16,7 +22,7 @@ pub enum DeleteTodoItemError {
 pub async fn delete_todo_item(
     db: axum::Extension<PgPool>,
     Path(todo_item_id): Path<Uuid>,
-) -> Result<String, String> {
+) -> Result<Json<DeleteTodoItemResponse>, String> {
     let db_result: Result<PgQueryResult, sqlx::Error> = sqlx::query!(
         r#"
             DELETE
@@ -29,7 +35,7 @@ pub async fn delete_todo_item(
     .await;
 
     match db_result {
-        Ok(_) => Ok(todo_item_id.to_string()),
+        Ok(_) => Ok(Json(DeleteTodoItemResponse { success: true })),
         Err(e) => match e {
             sqlx::Error::RowNotFound => Err(DeleteTodoItemError::TodoItemNotFound.to_string()),
             _ => {
