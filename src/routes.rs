@@ -1,3 +1,5 @@
+//! Contains the Router and API route handlers for the application.
+
 use axum::{
     routing::{delete, get, patch, post},
     Router,

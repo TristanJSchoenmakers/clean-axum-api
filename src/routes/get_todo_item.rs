@@ -1,4 +1,4 @@
-use crate::domain::todo_item::{PriorityLevel, TodoItem};
+use crate::domain::entities::todo_item::{PriorityLevel, TodoItem};
 use axum::{extract::Path, Json};
 use sqlx::PgPool;
 use thiserror::Error;

@@ -1,4 +1,4 @@
-use crate::domain::todo_item::{PriorityLevel, TodoItem};
+use crate::domain::entities::todo_item::{PriorityLevel, TodoItem};
 use axum::http::StatusCode;
 use axum::Json;
 use serde::{Deserialize, Serialize};
@@ -77,7 +77,7 @@ mod tests {
 
     #[tokio::test]
     async fn correct_request() {
-        let app = crate::test_util::setup_axum().await;
+        let app = crate::test_util::setup_api().await;
         let request = Request::builder()
             .method(Method::POST)
             .uri("/todoitem")
@@ -101,7 +101,7 @@ mod tests {
 
     #[tokio::test]
     async fn incorrect_request() {
-        let app = crate::test_util::setup_axum().await;
+        let app = crate::test_util::setup_api().await;
 
         let response = app
             .oneshot(
@@ -125,7 +125,7 @@ mod tests {
 
     #[tokio::test]
     async fn invalid_domain() {
-        let app = crate::test_util::setup_axum().await;
+        let app = crate::test_util::setup_api().await;
 
         let response = app
             .oneshot(

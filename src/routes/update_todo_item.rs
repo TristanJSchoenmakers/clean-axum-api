@@ -8,7 +8,7 @@ use sqlx::{postgres::PgQueryResult, PgPool};
 use thiserror::Error;
 use uuid::Uuid;
 
-use crate::domain::todo_item::PriorityLevel;
+use crate::domain::entities::todo_item::PriorityLevel;
 
 #[derive(Deserialize)]
 pub struct UpdateTodoItemRequest {

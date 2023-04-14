@@ -2,11 +2,14 @@ use api::{config::Config, routes};
 use axum::Extension;
 use clap::Parser;
 use sqlx::postgres::PgPoolOptions;
+use tracing::info;
 
 #[tokio::main]
 async fn main() {
     // Initialize the logger
     tracing_subscriber::fmt::init();
+
+    info!("Starting API");
 
     // Parse our configuration from the environment.
     let config = Config::parse();
@@ -18,7 +21,7 @@ async fn main() {
         .await
         .unwrap();
 
-    println!("listening on localhost:8000");
+    info!("listening on localhost:8000");
 
     // Start running the API
     axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())

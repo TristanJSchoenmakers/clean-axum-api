@@ -1,7 +1,5 @@
 pub mod config;
-pub mod domain {
-    pub mod todo_item;
-}
+pub mod domain;
 pub mod routes;
 
 #[cfg(test)]
@@ -11,7 +9,8 @@ mod test_util {
     use clap::Parser;
     use sqlx::postgres::PgPoolOptions;
 
-    pub async fn setup_axum() -> Router {
+    /// Sets up the API for testing
+    pub async fn setup_api() -> Router {
         let config = Config::parse();
 
         let db = PgPoolOptions::new()
