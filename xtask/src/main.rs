@@ -1,7 +1,6 @@
+use clap::Parser;
 use std::{env, path::Path};
 use xshell::{cmd, Shell};
-
-use clap::Parser;
 
 /// cargo-xtask adds automation to a Rust project, see: https://github.com/matklad/cargo-xtask
 #[derive(Parser)]
@@ -12,6 +11,8 @@ enum Cargo {
     Init,
     /// Does all the checks that the build/validation pipeline does
     Check,
+    /// Syncs lib.rs documentation with README.md
+    DocGen,
 }
 
 fn main() {
@@ -23,6 +24,7 @@ fn main() {
     match Cargo::parse() {
         Cargo::Init => init(sh),
         Cargo::Check => check(sh),
+        Cargo::DocGen => doc_gen(sh),
     }
 }
 
@@ -58,4 +60,26 @@ fn check(sh: &Shell) {
         cmd!(sh, "cargo install cargo-audit").run().unwrap();
     };
     cmd!(sh, "cargo audit").run().unwrap();
+}
+
+fn doc_gen(sh: &Shell) {
+    // 1. Sync lib.rs documentation to README.md
+    if cmd!(sh, "cargo readme --help")
+        .ignore_stderr()
+        .ignore_stdout()
+        .quiet()
+        .run()
+        .is_err()
+    {
+        cmd!(sh, "cargo install cargo-readme").run().unwrap();
+    };
+
+    let dir = sh.current_dir();
+    let readme_path = dir.to_str().unwrap();
+    cmd!(
+        sh,
+        "cargo readme -o {readme_path}/README.md --no-title --no-indent-headings"
+    )
+    .read()
+    .unwrap();
 }
