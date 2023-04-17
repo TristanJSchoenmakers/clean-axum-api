@@ -32,14 +32,14 @@
 //!
 //! Run `cargo xtask --help` for a list of the other xtask commands
 //!
-//! ``` bash
+//! ```bash
 //! cargo xtask init
 //! ```
 //!
 //!
 //! #### Running the API
 //!
-//! ``` bash
+//! ```bash
 //! cargo run
 //! ```
 

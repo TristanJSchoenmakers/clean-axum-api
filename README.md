@@ -32,13 +32,13 @@ Prerequisites:
 
 Run `cargo xtask --help` for a list of the other xtask commands
 
-``` bash
+```bash
 cargo xtask init
-```rust
+```
 
 
 #### Running the API
 
-``` bash
+```bash
 cargo run
 ```
