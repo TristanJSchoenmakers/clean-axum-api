@@ -1,5 +1,7 @@
 <h1 align="center">clean-architecture (🔨 UNDER CONSTRUCTION)</h1>
 
+<p align="center">A cleanly designed Rust REST Api</p>
+
 <div align="center">
   <!-- Github Actions -->
   <a href="https://github.com/TristanJSchoenmakers/clean-architecture/actions/workflows/build-validation.yml">
@@ -10,25 +12,23 @@
 
 <br />
 
-A cleanly designed Rust REST Api
 
-
-## Technologies
+## Technologies 🔧
 
 - [Axum](https://github.com/tokio-rs/axum)
 - [Sqlx](https://github.com/launchbadge/sqlx)
 - [Xtask](https://github.com/matklad/cargo-xtask)
 
 
-## Getting started
+## Getting started <span style="color:crimson">▶</span>
 
-Prerequisites:
+Prerequisites for running locally:
 
 - [cargo](https://www.rust-lang.org/tools/install)
 - [docker (compose)](https://docs.docker.com/engine/install/)
 
 
-#### Initialize
+#### 1 - Initialize
 
 Run `cargo xtask --help` for a list of the other xtask commands
 
@@ -37,7 +37,7 @@ cargo xtask init
 ```
 
 
-#### Running the API
+#### 2 - Running the API
 
 ```bash
 cargo run
