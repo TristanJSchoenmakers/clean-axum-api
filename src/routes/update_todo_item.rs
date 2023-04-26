@@ -34,7 +34,7 @@ pub enum UpdateTodoItemError {
 }
 
 pub async fn update_todo_item(
-    Path(id): Path<Uuid>,
+    Path(todo_item_id): Path<Uuid>,
     db: Extension<PgPool>,
     Json(body): Json<UpdateTodoItemRequest>,
 ) -> Result<Json<UpdateTodoItemResponse>, String> {
@@ -49,7 +49,7 @@ pub async fn update_todo_item(
                 updated_at = $6
             WHERE id = $1;
         "#,
-        id,
+        todo_item_id,
         body.title,
         body.note,
         body.priority as _,

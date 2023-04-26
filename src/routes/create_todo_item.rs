@@ -1,7 +1,9 @@
 use crate::domain::entities::todo_item::{PriorityLevel, TodoItem};
-use axum::http::StatusCode;
+use axum::response::Response;
 use axum::Json;
+use axum::{http::StatusCode, response::IntoResponse};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use sqlx::{postgres::PgQueryResult, PgPool};
 use thiserror::Error;
 use tracing::error;
@@ -28,16 +30,25 @@ pub enum CreateTodoItemError {
     InternalServerError,
 }
 
+impl IntoResponse for CreateTodoItemError {
+    fn into_response(self) -> Response {
+        let status_code = match self {
+            CreateTodoItemError::InvalidTodoItem => StatusCode::BAD_REQUEST,
+            CreateTodoItemError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+        };
+        let message = self.to_string();
+        let body = Json(json!({ "message": message }));
+
+        (status_code, body).into_response()
+    }
+}
+
 pub async fn create_todo_item(
     db: axum::Extension<PgPool>,
     Json(body): Json<CreateTodoItemRequest>,
-) -> Result<Json<CreateTodoItemResponse>, (StatusCode, String)> {
-    let todo_item = TodoItem::try_create(body.title, body.note, body.priority).map_err(|_| {
-        (
-            StatusCode::BAD_REQUEST,
-            CreateTodoItemError::InvalidTodoItem.to_string(),
-        )
-    })?;
+) -> Result<Json<CreateTodoItemResponse>, CreateTodoItemError> {
+    let todo_item = TodoItem::try_create(body.title, body.note, body.priority)
+        .map_err(|_| CreateTodoItemError::InvalidTodoItem)?;
 
     let db_result: Result<PgQueryResult, sqlx::Error> = sqlx::query!(
         r#"
@@ -57,16 +68,7 @@ pub async fn create_todo_item(
     .execute(&*db)
     .await;
 
-    if let Err(e) = db_result {
-        error!(
-            "something went wrong when excecuting the createTodoItemQuery to the database: {}",
-            e
-        );
-        return Err((
-            StatusCode::INTERNAL_SERVER_ERROR,
-            CreateTodoItemError::InternalServerError.to_string(),
-        ));
-    }
+    db_result.map_err(|_| CreateTodoItemError::InvalidTodoItem)?;
 
     Ok(Json(CreateTodoItemResponse {
         todo_item_id: todo_item.id.to_string(),
@@ -79,9 +81,11 @@ mod tests {
     use hyper::{header, Method, StatusCode};
     use tower::ServiceExt;
 
+    use crate::test_util::setup_api;
+
     #[tokio::test]
     async fn correct_request() {
-        let app = crate::test_util::setup_api().await;
+        let app = setup_api().await;
         let request = Request::builder()
             .method(Method::POST)
             .uri("/todoitem")
@@ -105,7 +109,7 @@ mod tests {
 
     #[tokio::test]
     async fn incorrect_request() {
-        let app = crate::test_util::setup_api().await;
+        let app = setup_api().await;
 
         let response = app
             .oneshot(
@@ -129,7 +133,7 @@ mod tests {
 
     #[tokio::test]
     async fn invalid_domain() {
-        let app = crate::test_util::setup_api().await;
+        let app = setup_api().await;
 
         let response = app
             .oneshot(
@@ -150,5 +154,8 @@ mod tests {
             .unwrap();
 
         assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+        let body = hyper::body::to_bytes(response.into_body()).await.unwrap();
+        let body = String::from_utf8_lossy(&body[..]);
+        assert!(body.eq(r#"{"message":"Invalid Todo Item"}"#));
     }
 }
