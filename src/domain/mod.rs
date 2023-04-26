@@ -1,6 +1,6 @@
 //! Contains the Entities and ValueObjects of the application.
 //!
-//! <h5 align="center">Domain Diagram</h1>
+//! <h5 align="center">Domain Diagram</h5>
 //!
 //! <div align="center">
 //!

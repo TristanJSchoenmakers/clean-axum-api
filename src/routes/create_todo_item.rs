@@ -4,6 +4,7 @@ use axum::Json;
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgQueryResult, PgPool};
 use thiserror::Error;
+use tracing::error;
 
 #[derive(Deserialize)]
 pub struct CreateTodoItemRequest {
@@ -57,7 +58,10 @@ pub async fn create_todo_item(
     .await;
 
     if let Err(e) = db_result {
-        println!("Matched {:?}!", e);
+        error!(
+            "something went wrong when excecuting the createTodoItemQuery to the database: {}",
+            e
+        );
         return Err((
             StatusCode::INTERNAL_SERVER_ERROR,
             CreateTodoItemError::InternalServerError.to_string(),
