@@ -68,7 +68,10 @@ pub async fn create_todo_item(
     .execute(&*db)
     .await;
 
-    db_result.map_err(|_| CreateTodoItemError::InvalidTodoItem)?;
+    db_result.map_err(|e| {
+        error!("unable to excecute createTodoItem database Query: {}", e);
+        CreateTodoItemError::InternalServerError
+    })?;
 
     Ok(Json(CreateTodoItemResponse {
         todo_item_id: todo_item.id.to_string(),

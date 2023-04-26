@@ -1,7 +1,14 @@
 use crate::domain::entities::todo_item::{PriorityLevel, TodoItem};
-use axum::{extract::Path, Json};
+use axum::{
+    extract::Path,
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    Json,
+};
+use serde_json::json;
 use sqlx::PgPool;
 use thiserror::Error;
+use tracing::error;
 use uuid::Uuid;
 
 /// Errors that can happen in the get_todo_item route
@@ -14,10 +21,23 @@ pub enum GetTodoItemError {
     InternalServerError,
 }
 
+impl IntoResponse for GetTodoItemError {
+    fn into_response(self) -> Response {
+        let status_code = match self {
+            GetTodoItemError::TodoItemNotFound => StatusCode::OK,
+            GetTodoItemError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+        };
+        let message = self.to_string();
+        let body = Json(json!({ "message": message }));
+
+        (status_code, body).into_response()
+    }
+}
+
 pub async fn get_todo_item(
     db: axum::Extension<PgPool>,
     Path(todo_item_id): Path<Uuid>,
-) -> Result<Json<TodoItem>, String> {
+) -> Result<Json<TodoItem>, GetTodoItemError> {
     let db_result: Result<TodoItem, sqlx::Error> = sqlx::query_as!(
         TodoItem,
         r#"
@@ -30,14 +50,13 @@ pub async fn get_todo_item(
     .fetch_one(&*db)
     .await;
 
-    match db_result {
-        Ok(r) => Ok(Json(r)),
-        Err(e) => match e {
-            sqlx::Error::RowNotFound => Err(GetTodoItemError::TodoItemNotFound.to_string()),
-            _ => {
-                println!("Matched {:?}!", e);
-                Err(GetTodoItemError::InternalServerError.to_string())
-            }
-        },
-    }
+    let todo_item = db_result.map_err(|e| match e {
+        sqlx::Error::RowNotFound => GetTodoItemError::TodoItemNotFound,
+        _ => {
+            error!("unable to excecute getTodoItem database Query: {}", e);
+            GetTodoItemError::InternalServerError
+        }
+    })?;
+
+    Ok(Json(todo_item))
 }

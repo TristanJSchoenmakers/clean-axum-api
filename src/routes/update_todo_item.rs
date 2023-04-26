@@ -1,11 +1,15 @@
 use axum::{
     extract::{Extension, Path},
+    http::StatusCode,
+    response::{IntoResponse, Response},
     Json,
 };
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use sqlx::{postgres::PgQueryResult, PgPool};
 use thiserror::Error;
+use tracing::error;
 use uuid::Uuid;
 
 use crate::domain::entities::todo_item::PriorityLevel;
@@ -33,11 +37,24 @@ pub enum UpdateTodoItemError {
     InternalServerError,
 }
 
+impl IntoResponse for UpdateTodoItemError {
+    fn into_response(self) -> Response {
+        let status_code = match self {
+            UpdateTodoItemError::TodoItemNotFound => StatusCode::OK,
+            UpdateTodoItemError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+        };
+        let message = self.to_string();
+        let body = Json(json!({ "message": message }));
+
+        (status_code, body).into_response()
+    }
+}
+
 pub async fn update_todo_item(
     Path(todo_item_id): Path<Uuid>,
     db: Extension<PgPool>,
     Json(body): Json<UpdateTodoItemRequest>,
-) -> Result<Json<UpdateTodoItemResponse>, String> {
+) -> Result<Json<UpdateTodoItemResponse>, UpdateTodoItemError> {
     let db_result: Result<PgQueryResult, sqlx::Error> = sqlx::query!(
         r#"
             UPDATE todo_items
@@ -59,14 +76,13 @@ pub async fn update_todo_item(
     .execute(&*db)
     .await;
 
-    match db_result {
-        Ok(_) => Ok(Json(UpdateTodoItemResponse { success: true })),
-        Err(e) => match e {
-            sqlx::Error::RowNotFound => Err(UpdateTodoItemError::TodoItemNotFound.to_string()),
-            _ => {
-                println!("Matched {:?}!", e);
-                Err(UpdateTodoItemError::InternalServerError.to_string())
-            }
-        },
-    }
+    db_result.map_err(|e| match e {
+        sqlx::Error::RowNotFound => UpdateTodoItemError::TodoItemNotFound,
+        _ => {
+            error!("unable to excecute updateTodoItem database Query: {}", e);
+            UpdateTodoItemError::InternalServerError
+        }
+    })?;
+
+    Ok(Json(UpdateTodoItemResponse { success: true }))
 }

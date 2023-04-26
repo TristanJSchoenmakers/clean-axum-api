@@ -1,7 +1,14 @@
-use axum::{extract::Path, Json};
+use axum::{
+    extract::Path,
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    Json,
+};
 use serde::Serialize;
+use serde_json::json;
 use sqlx::{postgres::PgQueryResult, PgPool};
 use thiserror::Error;
+use tracing::error;
 use uuid::Uuid;
 
 #[derive(Serialize)]
@@ -19,10 +26,23 @@ pub enum DeleteTodoItemError {
     InternalServerError,
 }
 
+impl IntoResponse for DeleteTodoItemError {
+    fn into_response(self) -> Response {
+        let status_code = match self {
+            DeleteTodoItemError::TodoItemNotFound => StatusCode::OK,
+            DeleteTodoItemError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+        };
+        let message = self.to_string();
+        let body = Json(json!({ "message": message }));
+
+        (status_code, body).into_response()
+    }
+}
+
 pub async fn delete_todo_item(
     db: axum::Extension<PgPool>,
     Path(todo_item_id): Path<Uuid>,
-) -> Result<Json<DeleteTodoItemResponse>, String> {
+) -> Result<Json<DeleteTodoItemResponse>, DeleteTodoItemError> {
     let db_result: Result<PgQueryResult, sqlx::Error> = sqlx::query!(
         r#"
             DELETE
@@ -34,14 +54,13 @@ pub async fn delete_todo_item(
     .execute(&*db)
     .await;
 
-    match db_result {
-        Ok(_) => Ok(Json(DeleteTodoItemResponse { success: true })),
-        Err(e) => match e {
-            sqlx::Error::RowNotFound => Err(DeleteTodoItemError::TodoItemNotFound.to_string()),
-            _ => {
-                println!("Matched {:?}!", e);
-                Err(DeleteTodoItemError::InternalServerError.to_string())
-            }
-        },
-    }
+    db_result.map_err(|e| match e {
+        sqlx::Error::RowNotFound => DeleteTodoItemError::TodoItemNotFound,
+        _ => {
+            error!("unable to excecute deleteTodoItem database Query: {}", e);
+            DeleteTodoItemError::InternalServerError
+        }
+    })?;
+
+    Ok(Json(DeleteTodoItemResponse { success: true }))
 }
