@@ -17,6 +17,7 @@
 
 - [Axum](https://github.com/tokio-rs/axum)
 - [Sqlx](https://github.com/launchbadge/sqlx)
+- [Tracing](https://github.com/tokio-rs/tracing)
 - [Xtask](https://github.com/matklad/cargo-xtask)
 
 
