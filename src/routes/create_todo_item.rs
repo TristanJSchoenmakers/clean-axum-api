@@ -47,7 +47,7 @@ pub async fn create_todo_item(
     db: axum::Extension<PgPool>,
     Json(body): Json<CreateTodoItemRequest>,
 ) -> Result<Json<CreateTodoItemResponse>, CreateTodoItemError> {
-    let todo_item = TodoItem::try_create(body.title, body.note, body.priority)
+    let todo_item = TodoItem::new(body.title, body.note, body.priority)
         .map_err(|_| CreateTodoItemError::InvalidTodoItem)?;
 
     let db_result: Result<PgQueryResult, sqlx::Error> = sqlx::query!(
