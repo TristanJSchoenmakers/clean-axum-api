@@ -82,6 +82,7 @@ pub async fn create_todo_item(
 mod tests {
     use axum::{body::Body, http::Request};
     use hyper::{header, Method, StatusCode};
+    use pretty_assertions::assert_eq;
     use tower::ServiceExt;
 
     use crate::test_util::setup_api;
@@ -104,7 +105,7 @@ mod tests {
 
         let response = app.oneshot(request).await.unwrap();
 
-        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.status(), StatusCode::CREATED);
         let body = hyper::body::to_bytes(response.into_body()).await.unwrap();
         let body = String::from_utf8_lossy(&body[..]);
         assert!(body.contains(r#"{"todo_item_id":""#));
@@ -159,6 +160,6 @@ mod tests {
         assert_eq!(response.status(), StatusCode::BAD_REQUEST);
         let body = hyper::body::to_bytes(response.into_body()).await.unwrap();
         let body = String::from_utf8_lossy(&body[..]);
-        assert!(body.eq(r#"{"message":"Invalid Todo Item"}"#));
+        assert_eq!(body, r#"{"message":"Invalid Todo Item"}"#);
     }
 }
