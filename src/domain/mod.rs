@@ -4,10 +4,16 @@
 //!
 //! <div align="center">
 //!
-//! [![](https://www.plantuml.com/plantuml/svg/ZOp1IWGn38RlVOeUjVW4iYnxy2882kwUX-uaIA1jIkQli8ZlhdL4Ek1XSmhvldo71T7GSd9kWRKP_gYaZ-3iFvp_djhENkZUXt1gGY7S_LsJB9Z-Hn0axk0L9kLjH4NnGvuhHCjk5VQZKKtK19TklVpkJ_pEQPICinHY6r8F4NoKpBiJvlscI5guYsVLJMGsZc2Q8ZhT_8zQgtID1hjCQ_7crdqwT-12BQSl)](https://www.plantuml.com/plantuml/uml/SoWkIImgAStDuV9FoafDBb6mgT7LLN0iAagizCaiBk622Liff1QM9kOKQsXomIM1WX3Pw5Y5r9pKtDIy4fV4aaGK1SMPLQb0FLmEgNaf85i0)
+//! [![](https://www.plantuml.com/plantuml/svg/ZP5FIyGm4CNl-HHprEA2VsxBMlRWGM7z0-wUIxSphWDDfamdoY9-TnDRbXOyc5DUtczUIDwwjrej-jQrz6PW0ig7TmDafSPOWdEzQMmCjeBoOEJXoq5QNTm3unAAOXSPY-BYTDfoRzNVbh6rb8rNKmw7gHN4VftdBj-w6e1oIdJAecp7JBsC-mrzK3k5b3m799r4tTL6M_QqsbbJpX9H0cLmBp8BQPJI35QrPNSsFyLYX__1J8_La7XsxhwTen0zp1umVkcJ189Rk1n6D_APnDKW7Wav-gIl1tsVIahg9kVDenQBybJLSjcDddDh2fXg_W40)](https://www.plantuml.com/plantuml/uml/ZP5FIyGm4CNl-HHprEA2VsxBMlRWGM7z0-wUIxSphWDDfamdoY9-TnDRbXOyc5DUtczUIDwwjrej-jQrz6PW0ig7TmDafSPOWdEzQMmCjeBoOEJXoq5QNTm3unAAOXSPY-BYTDfoRzNVbh6rb8rNKmw7gHN4VftdBj-w6e1oIdJAecp7JBsC-mrzK3k5b3m799r4tTL6M_QqsbbJpX9H0cLmBp8BQPJI35QrPNSsFyLYX__1J8_La7XsxhwTen0zp1umVkcJ189Rk1n6D_APnDKW7Wav-gIl1tsVIahg9kVDenQBybJLSjcDddDh2fXg_W40)
 //!
 //! </div>
 
+/// Objects with a unique identity, and usually with state (e.g., a person).
 pub mod entities {
     pub mod todo_item;
+}
+
+/// Immutable objects that are constructed when needed and discarded when no longer valuable
+pub mod value_objects {
+    pub mod priority_level;
 }

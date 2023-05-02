@@ -1,9 +1,11 @@
 use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use thiserror::Error;
 use uuid::Uuid;
 
-/// TodoItem represents a single item in a to-do list.
+use crate::domain::value_objects::priority_level::PriorityLevel;
+
+/// The TodoItem entiry represents a single item in a to-do list.
 ///
 /// It contains information such as title, note, priority level, reminder, and status.
 #[derive(Debug, Serialize)]
@@ -59,24 +61,16 @@ impl TodoItem {
     }
 }
 
-#[derive(PartialEq, Debug, Deserialize, Serialize, sqlx::Type)]
-#[repr(i32)]
-pub enum PriorityLevel {
-    None = 0,
-    Low = 1,
-    Medium = 2,
-    High = 3,
-}
-
 #[cfg(test)]
 mod tests {
-    use crate::domain::entities::todo_item::{PriorityLevel, TodoItemValidationError};
+    use crate::domain::entities::todo_item::TodoItemValidationError;
+    use crate::domain::value_objects::priority_level::PriorityLevel;
 
     use super::TodoItem;
 
     #[test]
     fn new_ok() {
-        let result = TodoItem::new("Do the dishes".to_string(), None, super::PriorityLevel::Low);
+        let result = TodoItem::new("Do the dishes".to_string(), None, PriorityLevel::Low);
 
         let todo_item = result.unwrap();
         assert_eq!(todo_item.title, "Do the dishes".to_string());
@@ -87,7 +81,7 @@ mod tests {
 
     #[test]
     fn new_title_empty() {
-        let result = TodoItem::new(" ".to_string(), None, super::PriorityLevel::Low);
+        let result = TodoItem::new(" ".to_string(), None, PriorityLevel::Low);
         let error = result.unwrap_err();
         assert_eq!(error, TodoItemValidationError::TitleEmpty);
     }
@@ -97,7 +91,7 @@ mod tests {
         let result = TodoItem::new(
             "Do the dishes, and also do the laundry and than watch some television".to_string(),
             None,
-            super::PriorityLevel::Low,
+            PriorityLevel::Low,
         );
 
         let error = result.unwrap_err();

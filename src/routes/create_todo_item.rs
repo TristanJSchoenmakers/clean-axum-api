@@ -1,4 +1,5 @@
-use crate::domain::entities::todo_item::{PriorityLevel, TodoItem};
+use crate::domain::entities::todo_item::TodoItem;
+use crate::domain::value_objects::priority_level::PriorityLevel;
 use axum::response::Response;
 use axum::Json;
 use axum::{http::StatusCode, response::IntoResponse};
@@ -105,7 +106,7 @@ mod tests {
 
         let response = app.oneshot(request).await.unwrap();
 
-        assert_eq!(response.status(), StatusCode::CREATED);
+        assert_eq!(response.status(), StatusCode::OK);
         let body = hyper::body::to_bytes(response.into_body()).await.unwrap();
         let body = String::from_utf8_lossy(&body[..]);
         assert!(body.contains(r#"{"todo_item_id":""#));

@@ -12,7 +12,7 @@ use thiserror::Error;
 use tracing::error;
 use uuid::Uuid;
 
-use crate::domain::entities::todo_item::PriorityLevel;
+use crate::domain::value_objects::priority_level::PriorityLevel;
 
 #[derive(Deserialize)]
 pub struct UpdateTodoItemRequest {

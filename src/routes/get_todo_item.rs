@@ -1,4 +1,5 @@
-use crate::domain::entities::todo_item::{PriorityLevel, TodoItem};
+use crate::domain::entities::todo_item::TodoItem;
+use crate::domain::value_objects::priority_level::PriorityLevel;
 use axum::{
     extract::Path,
     http::StatusCode,
