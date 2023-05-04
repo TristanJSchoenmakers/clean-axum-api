@@ -7,5 +7,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added Tracing package for logging
 - Updated dependencies
-- [ ] Experiment with using cargo-deny instead of cargo-audit
 - [ ] Use [Nutype](https://github.com/greyblake/nutype) for Domain

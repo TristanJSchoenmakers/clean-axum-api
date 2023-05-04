@@ -1,3 +1,5 @@
+# Cargo configuration keys and their definitions at https://doc.rust-lang.org/cargo/reference/config.html
+
 [alias]
 xtask = "run -q --package xtask --"
 

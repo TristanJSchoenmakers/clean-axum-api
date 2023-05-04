@@ -15,8 +15,8 @@ use uuid::Uuid;
 /// Errors that can happen in the get_todo_item route
 #[derive(Error, Debug)]
 pub enum GetTodoItemError {
-    #[error("Todo Item with Id not found")]
-    TodoItemNotFound,
+    #[error("Todo Item with Id '{0}' not found")]
+    TodoItemNotFound(Uuid),
 
     #[error("Internal Server Error")]
     InternalServerError,
@@ -25,11 +25,10 @@ pub enum GetTodoItemError {
 impl IntoResponse for GetTodoItemError {
     fn into_response(self) -> Response {
         let status_code = match self {
-            GetTodoItemError::TodoItemNotFound => StatusCode::OK,
+            GetTodoItemError::TodoItemNotFound(_) => StatusCode::OK,
             GetTodoItemError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        let message = self.to_string();
-        let body = Json(json!({ "message": message }));
+        let body = Json(json!({ "message": self.to_string() }));
 
         (status_code, body).into_response()
     }
@@ -52,7 +51,7 @@ pub async fn get_todo_item(
     .await;
 
     let todo_item = db_result.map_err(|e| match e {
-        sqlx::Error::RowNotFound => GetTodoItemError::TodoItemNotFound,
+        sqlx::Error::RowNotFound => GetTodoItemError::TodoItemNotFound(todo_item_id),
         _ => {
             error!("unable to excecute getTodoItem database Query: {}", e);
             GetTodoItemError::InternalServerError

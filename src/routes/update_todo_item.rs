@@ -30,8 +30,8 @@ pub struct UpdateTodoItemResponse {
 /// Errors that can happen in the update_todo_item route
 #[derive(Error, Debug)]
 pub enum UpdateTodoItemError {
-    #[error("Todo Item with Id not found")]
-    TodoItemNotFound,
+    #[error("Todo Item with Id '{0}' not found")]
+    TodoItemNotFound(Uuid),
 
     #[error("Internal Server Error")]
     InternalServerError,
@@ -40,11 +40,10 @@ pub enum UpdateTodoItemError {
 impl IntoResponse for UpdateTodoItemError {
     fn into_response(self) -> Response {
         let status_code = match self {
-            UpdateTodoItemError::TodoItemNotFound => StatusCode::OK,
+            UpdateTodoItemError::TodoItemNotFound(_) => StatusCode::OK,
             UpdateTodoItemError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        let message = self.to_string();
-        let body = Json(json!({ "message": message }));
+        let body = Json(json!({ "message": self.to_string() }));
 
         (status_code, body).into_response()
     }
@@ -77,7 +76,7 @@ pub async fn update_todo_item(
     .await;
 
     db_result.map_err(|e| match e {
-        sqlx::Error::RowNotFound => UpdateTodoItemError::TodoItemNotFound,
+        sqlx::Error::RowNotFound => UpdateTodoItemError::TodoItemNotFound(todo_item_id),
         _ => {
             error!("unable to excecute updateTodoItem database Query: {}", e);
             UpdateTodoItemError::InternalServerError

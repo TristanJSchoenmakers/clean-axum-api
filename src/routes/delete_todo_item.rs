@@ -19,8 +19,8 @@ pub struct DeleteTodoItemResponse {
 /// Errors that can happen in the delete_todo_item route
 #[derive(Error, Debug)]
 pub enum DeleteTodoItemError {
-    #[error("Todo Item with Id not found")]
-    TodoItemNotFound,
+    #[error("Todo Item with Id '{0}' not found")]
+    TodoItemNotFound(Uuid),
 
     #[error("Internal Server Error")]
     InternalServerError,
@@ -29,11 +29,10 @@ pub enum DeleteTodoItemError {
 impl IntoResponse for DeleteTodoItemError {
     fn into_response(self) -> Response {
         let status_code = match self {
-            DeleteTodoItemError::TodoItemNotFound => StatusCode::OK,
+            DeleteTodoItemError::TodoItemNotFound(_) => StatusCode::OK,
             DeleteTodoItemError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        let message = self.to_string();
-        let body = Json(json!({ "message": message }));
+        let body = Json(json!({ "message": self.to_string() }));
 
         (status_code, body).into_response()
     }
@@ -55,7 +54,7 @@ pub async fn delete_todo_item(
     .await;
 
     db_result.map_err(|e| match e {
-        sqlx::Error::RowNotFound => DeleteTodoItemError::TodoItemNotFound,
+        sqlx::Error::RowNotFound => DeleteTodoItemError::TodoItemNotFound(todo_item_id),
         _ => {
             error!("unable to excecute deleteTodoItem database Query: {}", e);
             DeleteTodoItemError::InternalServerError

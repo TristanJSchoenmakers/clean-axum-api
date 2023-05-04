@@ -37,8 +37,7 @@ impl IntoResponse for CreateTodoItemError {
             CreateTodoItemError::InvalidTodoItem => StatusCode::BAD_REQUEST,
             CreateTodoItemError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        let message = self.to_string();
-        let body = Json(json!({ "message": message }));
+        let body = Json(json!({ "message": self.to_string() }));
 
         (status_code, body).into_response()
     }
