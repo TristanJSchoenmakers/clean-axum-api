@@ -29,14 +29,7 @@ fn main() {
 }
 
 fn init(sh: &Shell) {
-    // 1. Run docker compose
-    if cmd!(sh, "docker compose --help").read().is_err() {
-        eprintln!("Cannot find docker compose, is docker compose not installed?");
-        std::process::exit(-1);
-    };
-    cmd!(sh, "docker compose up --detach").run().unwrap();
-
-    // 2. Setup database
+    // 1. Setup database
     if cmd!(sh, "cargo sqlx --help").read().is_err() {
         cmd!(sh, "cargo install sqlx-cli").run().unwrap();
     };

@@ -28,6 +28,13 @@
 //! - [docker (compose)](https://docs.docker.com/engine/install/)
 //!
 //!
+//! #### 1 - Run Docker compose
+//!
+//! ```bash
+//! docker compose up --detach
+//! ```
+//!
+//!
 //! #### 1 - Initialize
 //!
 //! Run `cargo xtask --help` for a list of the other xtask commands
