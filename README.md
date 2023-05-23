@@ -35,7 +35,7 @@ docker compose up --detach
 ```
 
 
-#### 1 - Initialize
+#### 2 - Initialize
 
 Run `cargo xtask --help` for a list of the other xtask commands
 
@@ -44,7 +44,7 @@ cargo xtask init
 ```
 
 
-#### 2 - Running the API
+#### 3 - Running the API
 
 ```bash
 cargo run
