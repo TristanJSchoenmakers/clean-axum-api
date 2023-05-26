@@ -38,10 +38,10 @@ impl TodoItem {
         priority: PriorityLevel,
     ) -> Result<Self, TodoItemValidationError> {
         // sanitize
-        let sanitized_username: String = title.trim().to_lowercase();
+        let title: String = title.trim().to_lowercase();
 
         // validate
-        if sanitized_username.is_empty() {
+        if title.is_empty() {
             Err(TodoItemValidationError::TitleEmpty)
         } else if title.chars().count() > 25 {
             Err(TodoItemValidationError::TitleTooLong)
