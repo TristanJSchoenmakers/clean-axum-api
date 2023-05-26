@@ -2,8 +2,11 @@ name: build-validation
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
+    branches:
+      - main
 
 env:
   CARGO_TERM_COLOR: always
@@ -30,56 +33,16 @@ jobs:
           --health-retries 5
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Setup Rust
-      uses: actions-rs/toolchain@v1
+    - uses: actions/checkout@v3
+    - uses: actions-rs/toolchain@stable
       with:
-        profile: minimal
-        toolchain: stable
         override: true
+        components: rustfmt, clippy
+    - uses: Swatinem/rust-cache@v2
 
-    - name: Cache Cargo dependencies
-      uses: actions/cache@v2
-      with:
-        path: ~/.cargo/registry
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        # restore-keys: |
-        #   ${{ runner.os }}-cargo-
-
-    - name: Cache build artifacts
-      uses: actions/cache@v2
-      with:
-        path: target
-        key: ${{ runner.os }}-build-target-${{ hashFiles('**/Cargo.lock') }}
-        # restore-keys: |
-        #   ${{ runner.os }}-build-target-
-
-    - name: Install SQLx CLI
-      run: cargo install --version=0.5.7 sqlx-cli
-
-    - name: Run database migrations
-      run: sqlx migrate run
-
-    - name: Build project
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --release
-
-    - name: Run tests
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --release
-
-    - name: Check formatting
-      run: |
-        rustup component add rustfmt
-        cargo fmt --all -- --check
-
-    - name: Clippy lint
-      run: |
-        rustup component add clippy
-        cargo clippy --all-targets --all-features -- -D warnings
+    - run: cargo install --version=0.5.7 sqlx-cli
+    - run: sqlx migrate run
+    - run: cargo build
+    - run: cargo test
+    - run: cargo clippy --all-targets --all-features -- -D warnings
+    - run: cargo fmt --all -- --check
