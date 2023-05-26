@@ -38,7 +38,7 @@ impl TodoItem {
         priority: PriorityLevel,
     ) -> Result<Self, TodoItemValidationError> {
         // sanitize
-        let title: String = title.trim().to_lowercase();
+        let title: String = title.trim().to_string();
 
         // validate
         if title.is_empty() {
