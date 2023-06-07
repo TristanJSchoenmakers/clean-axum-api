@@ -1,0 +1,33 @@
+use crate::domain::value_objects::priority_level::PriorityLevel;
+use crate::routes::response::internal_error;
+use crate::{domain::entities::todo_item::TodoItem, routes::response::json_error};
+use axum::{extract::Path, http::StatusCode, Json};
+use sqlx::PgPool;
+use uuid::Uuid;
+
+pub async fn get_todo_item(
+    db: axum::Extension<PgPool>,
+    Path(todo_item_id): Path<Uuid>,
+) -> Result<Json<TodoItem>, (StatusCode, String)> {
+    let db_result: Result<TodoItem, sqlx::Error> = sqlx::query_as!(
+        TodoItem,
+        r#"
+            SELECT id, list_id, title, note, priority AS "priority: PriorityLevel", reminder, done, created_at, updated_at
+            FROM public.todo_items
+            WHERE todo_items.id = $1;
+        "#,
+        todo_item_id
+    )
+    .fetch_one(&*db)
+    .await;
+
+    let todo_item = db_result.map_err(|e| match e {
+        sqlx::Error::RowNotFound => json_error(
+            "NOT_FOUND".to_string(),
+            format!("Todo Item with id '{}' not found", todo_item_id),
+        ),
+        e => internal_error(e),
+    })?;
+
+    Ok(Json(todo_item))
+}

@@ -1,17 +1,19 @@
 use chrono::{DateTime, Utc};
 use serde::Serialize;
-use thiserror::Error;
 use uuid::Uuid;
+use validator::Validate;
 
 use crate::domain::value_objects::priority_level::PriorityLevel;
 
 /// The TodoItem entiry represents a single item in a to-do list.
 ///
 /// It contains information such as title, note, priority level, reminder, and status.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Validate, Serialize)]
 pub struct TodoItem {
     pub id: Uuid,
     pub list_id: Uuid,
+    #[validate(length(min = 1, message = "must be atleast 1 character"))]
+    #[validate(length(max = 25, message = "cannot be longer than 25 characters"))]
     pub title: String,
     pub note: Option<String>,
     pub priority: PriorityLevel,
@@ -21,49 +23,37 @@ pub struct TodoItem {
     pub updated_at: DateTime<Utc>,
 }
 
-/// Represents errors that can occur when creating a TodoItem.
-#[derive(Error, PartialEq, Debug)]
-pub enum TodoItemValidationError {
-    #[error("Title cannot be longer then 25 characters")]
-    TitleTooLong,
-    #[error("Title cannot be a empty")]
-    TitleEmpty,
-}
-
 impl TodoItem {
     /// Tries to create a new TodoItem with the provided title, note, and priority.
     pub fn new(
         title: String,
         note: Option<String>,
         priority: PriorityLevel,
-    ) -> Result<Self, TodoItemValidationError> {
+    ) -> Result<Self, validator::ValidationErrors> {
         // sanitize
         let title: String = title.trim().to_string();
 
-        // validate
-        if title.is_empty() {
-            Err(TodoItemValidationError::TitleEmpty)
-        } else if title.chars().count() > 25 {
-            Err(TodoItemValidationError::TitleTooLong)
-        } else {
-            Ok(TodoItem {
-                id: Uuid::new_v4(),
-                list_id: Uuid::new_v4(),
-                title,
-                note,
-                priority,
-                reminder: None,
-                done: false,
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
-            })
+        let todo_item = TodoItem {
+            id: Uuid::new_v4(),
+            list_id: Uuid::new_v4(),
+            title,
+            note,
+            priority,
+            reminder: None,
+            done: false,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+        };
+
+        match todo_item.validate() {
+            Ok(_) => Ok(todo_item),
+            Err(e) => Err(e),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::domain::entities::todo_item::TodoItemValidationError;
     use crate::domain::value_objects::priority_level::PriorityLevel;
 
     use super::TodoItem;
@@ -82,8 +72,8 @@ mod tests {
     #[test]
     fn new_title_empty() {
         let result = TodoItem::new(" ".to_string(), None, PriorityLevel::Low);
-        let error = result.unwrap_err();
-        assert_eq!(error, TodoItemValidationError::TitleEmpty);
+        let err = format!("{}", result.unwrap_err());
+        assert_eq!(err, "title: must be atleast 1 character");
     }
 
     #[test]
@@ -94,7 +84,7 @@ mod tests {
             PriorityLevel::Low,
         );
 
-        let error = result.unwrap_err();
-        assert_eq!(error, TodoItemValidationError::TitleTooLong);
+        let err = format!("{}", result.unwrap_err());
+        assert_eq!(err, "title: cannot be longer than 25 characters");
     }
 }

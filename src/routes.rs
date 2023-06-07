@@ -1,19 +1,24 @@
-//! Contains the Router and API route handlers for the application.
+//! Defines API-routes & API-handlers of our API using [`axum`].
+//!
+//! [`axum`]: https://github.com/tokio-rs/axum
 
 use axum::{
     routing::{delete, get, patch, post},
     Router,
 };
 
-use self::{
+use self::todo_item::{
     create_todo_item::create_todo_item, delete_todo_item::delete_todo_item,
     get_todo_item::get_todo_item, update_todo_item::update_todo_item,
 };
 
-pub mod create_todo_item;
-pub mod delete_todo_item;
-pub mod get_todo_item;
-pub mod update_todo_item;
+pub mod response;
+pub mod todo_item {
+    pub mod create_todo_item;
+    pub mod delete_todo_item;
+    pub mod get_todo_item;
+    pub mod update_todo_item;
+}
 
 pub fn app() -> Router {
     Router::new()
