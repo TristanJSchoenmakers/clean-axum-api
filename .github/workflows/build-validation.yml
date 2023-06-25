@@ -1,3 +1,5 @@
+# This pipelines runs when a pull request is mades and validates the build
+
 name: build-validation
 
 on:
@@ -44,7 +46,6 @@ jobs:
       with:
         crate: sqlx-cli
 
-#    - run: cargo install --version=0.5.7 sqlx-cli
     - run: sqlx migrate run
     - run: cargo build
     - run: cargo test
