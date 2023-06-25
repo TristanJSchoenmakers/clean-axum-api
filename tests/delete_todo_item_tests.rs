@@ -6,7 +6,7 @@ use tower::ServiceExt;
 mod common;
 
 #[sqlx::test]
-fn happy_path(pool: PgPool) -> sqlx::Result<()> {
+fn correct_request(pool: PgPool) -> sqlx::Result<()> {
     let mut conn = pool.acquire().await?;
 
     sqlx::query!(r#"

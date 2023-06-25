@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
@@ -8,7 +8,7 @@ use crate::domain::value_objects::priority_level::PriorityLevel;
 /// The TodoItem entiry represents a single item in a to-do list.
 ///
 /// It contains information such as title, note, priority level, reminder, and status.
-#[derive(Debug, Validate, Serialize)]
+#[derive(Debug, Validate, Serialize, Deserialize)]
 pub struct TodoItem {
     pub id: Uuid,
     pub list_id: Uuid,

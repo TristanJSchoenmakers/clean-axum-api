@@ -25,5 +25,5 @@ pub fn app() -> Router {
         .route("/todoitem", post(create_todo_item))
         .route("/todoitem/:todo_item_id", delete(delete_todo_item))
         .route("/todoitem/:todo_item_id", get(get_todo_item))
-        .route("/todoitem/update/:todo_item_id", patch(update_todo_item))
+        .route("/todoitem/:todo_item_id", patch(update_todo_item))
 }

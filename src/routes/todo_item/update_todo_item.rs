@@ -52,13 +52,14 @@ pub async fn update_todo_item(
     .execute(&*db)
     .await;
 
-    db_result.map_err(|e| match e {
-        sqlx::Error::RowNotFound => json_error(
+    let db_result = db_result.map_err(internal_error)?;
+
+    if db_result.rows_affected() == 0 {
+        Err(json_error(
             "NOT_FOUND".to_string(),
             format!("Todo Item with id '{}' not found", todo_item_id),
-        ),
-        e => internal_error(e),
-    })?;
-
-    Ok(Json(UpdateTodoItemResponse { success: true }))
+        ))
+    } else {
+        Ok(Json(UpdateTodoItemResponse { success: true }))
+    }
 }
