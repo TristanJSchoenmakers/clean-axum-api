@@ -1,7 +1,5 @@
 # This pipelines runs when a pull request is mades and validates the build
 
-name: build-validation
-
 on:
   push:
     branches:
@@ -11,7 +9,6 @@ on:
       - main
 
 env:
-  CARGO_TERM_COLOR: always
   DATABASE_URL: postgres://postgres:password@localhost/api
 
 jobs:
