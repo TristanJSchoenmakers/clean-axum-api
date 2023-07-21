@@ -8,3 +8,15 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
+    
+  api:
+    image: clean-architecture/api
+    environment:
+      DATABASE_URL: "postgres://postgres:password@db:5432/api"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
