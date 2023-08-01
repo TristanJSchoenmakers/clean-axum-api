@@ -22,10 +22,10 @@ async fn main() {
         .await
         .expect("Failed to initialize Postgress connection");
 
-    info!("listening on localhost:3000");
+    info!("listening on localhost:8000");
 
     // Start running the API
-    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
+    axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())
         .serve(
             routes::app()
                 .layer(

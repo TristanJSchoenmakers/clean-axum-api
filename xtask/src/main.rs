@@ -30,9 +30,7 @@ fn main() {
 
 fn init(sh: &Shell) {
     // 1. Setup database
-    if cmd!(sh, "cargo sqlx --help").read().is_err() {
-        cmd!(sh, "cargo install sqlx-cli").run().unwrap();
-    };
+    cmd!(sh, "cargo install sqlx-cli").run().unwrap();
     cmd!(sh, "sqlx database setup").run().unwrap();
 }
 

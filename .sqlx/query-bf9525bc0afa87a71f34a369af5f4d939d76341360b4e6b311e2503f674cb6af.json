@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE\n            FROM public.todo_items\n            WHERE todo_items.id = $1;\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "bf9525bc0afa87a71f34a369af5f4d939d76341360b4e6b311e2503f674cb6af"
+}
