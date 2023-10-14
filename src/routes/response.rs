@@ -1,8 +1,9 @@
 //! Contains common axum responses for our routes
 
+use std::collections::HashMap;
+
 use axum::{http::StatusCode, Json};
 use serde_json::json;
-use std::collections::HashMap;
 use tracing::error;
 
 //TODO: transform in to a macro?
@@ -23,15 +24,17 @@ where
 }
 
 pub fn validation_error(err: validator::ValidationErrors) -> (StatusCode, String) {
-    let ow = err.field_errors();
-    let error_map: HashMap<&str, Vec<String>> = ow
-        .iter()
+    let error_map: HashMap<String, Vec<String>> = err
+        .field_errors()
+        .into_iter()
         .map(|(k, v)| {
-            let error_messages = v
-                .iter()
-                .filter_map(|v2| v2.message.as_ref().map(|s| s.to_string()))
-                .collect::<Vec<String>>();
-            (*k, error_messages)
+            (
+                k.to_string(),
+                v.into_iter()
+                    // .filter_map(|v2| v2.message.as_ref().map(|s| s.to_string()))
+                    .filter_map(|v2| v2.message.as_ref().map(ToString::to_string))
+                    .collect::<Vec<String>>(),
+            )
         })
         .collect();
 

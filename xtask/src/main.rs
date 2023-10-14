@@ -32,6 +32,8 @@ fn init(sh: &Shell) {
     // 1. Setup database
     cmd!(sh, "cargo install sqlx-cli").run().unwrap();
     cmd!(sh, "sqlx database setup").run().unwrap();
+    // 2. Install Drill for load testing: https://github.com/fcsonline/drill
+    cmd!(sh, "cargo install drill").run().unwrap();
 }
 
 fn check(sh: &Shell) {
