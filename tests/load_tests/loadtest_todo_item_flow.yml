@@ -1,0 +1,52 @@
+concurrency: 4
+base: 'http://localhost:8000'
+iterations: 1000
+rampup: 4
+
+plan:
+  - name: Create TodoItem
+    request:
+      url: /todoitem
+      method: POST
+      body: '{"title": "MyTitle","note": "my example note","priority": "Medium"}'
+      headers:
+        Content-Type: 'application/json'
+    assign: createresponse
+
+  - name: Update TodoItem
+    request:
+      url: /todoitem/{{ createresponse.body.todo_item_id }}
+      method: PATCH
+      body: '{"title": "Some updated Title","note": "Some updated Note","priority": "High","done": true}'
+      headers:
+        Content-Type: 'application/json'
+  
+  - name: Get Created TodoItem
+    request:
+      url: /todoitem/{{ createresponse.body.todo_item_id }}
+    assign: getresponse
+
+  - name: Assert request response code
+    assert:
+      key: getresponse.status
+      value: 200
+
+  - name: Assert TodoItem Value
+    assert:
+      key: getresponse.body.title
+      value: 'Some updated Title'
+
+  - name: Delete Created TodoItem
+    request:
+      url: /todoitem/{{ createresponse.body.todo_item_id }}
+      method: DELETE
+  
+  - name: Get Created TodoItem after delete
+    request:
+      url: /todoitem/{{ createresponse.body.todo_item_id }}
+    assign: getdeletedresponse
+
+  - name: Assert TodoItem not found
+    assert:
+      key: getdeletedresponse.status
+      value: 404

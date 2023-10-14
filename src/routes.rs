@@ -22,6 +22,7 @@ pub mod todo_item {
 
 pub fn app() -> Router {
     Router::new()
+        .route("/", get(|| async { "Api is running" }))
         .route("/todoitem", post(create_todo_item))
         .route("/todoitem/:todo_item_id", delete(delete_todo_item))
         .route("/todoitem/:todo_item_id", get(get_todo_item))

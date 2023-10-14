@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE todo_items\n            SET\n                title = COALESCE($2, title),\n                note = COALESCE($3, note),\n                priority = COALESCE($4, priority),\n                done = COALESCE($5, done),\n                updated_at = $6\n            WHERE id = $1;\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Text",
+        "Int4",
+        "Bool",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "f51a8a0311045375c04245e6d85151a6e1661f3108fa75625eaabc120b716458"
+}

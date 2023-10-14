@@ -20,7 +20,7 @@ async fn main() {
         .max_connections(5)
         .connect(&config.database_url)
         .await
-        .expect("Failed to initialize Postgress connection");
+        .expect("Failed to initialize Postgres connection");
 
     info!("listening on localhost:8000");
 
