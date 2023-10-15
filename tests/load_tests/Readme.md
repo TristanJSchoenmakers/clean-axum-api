@@ -7,5 +7,5 @@ This tool is one of the tools installed with `cargo xtask init`
 To run a benchmark run the following command:
 
 ``` bash
-drill -b {{loadtest_name}}.yml --help
+drill -b {{loadtest_name}}.yml --stats
 ```

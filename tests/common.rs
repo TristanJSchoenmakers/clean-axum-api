@@ -1,19 +1,46 @@
 // This is imported by different tests that use different functions.
 #![allow(dead_code)]
-use api::routes;
-use axum::{Extension, Router};
-use sqlx::PgPool;
-use tower_http::trace::{self, DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse};
-use tracing::Level;
 
-/// Sets up the API for testing
-pub async fn setup_api(pool: PgPool) -> Router {
-    routes::app()
-        .layer(
-            trace::TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::new())
-                .on_request(DefaultOnRequest::new().level(Level::INFO))
-                .on_response(DefaultOnResponse::new().level(Level::INFO)),
-        )
-        .layer(Extension(pool))
+use axum::body::{Body, BoxBody};
+use axum::http::{request, Request};
+use axum::response::Response;
+use hyper::body::HttpBody;
+
+pub trait RequestBuilderExt {
+    fn json(self, json: serde_json::Value) -> Request<Body>;
+
+    fn empty_body(self) -> Request<Body>;
+}
+
+impl RequestBuilderExt for request::Builder {
+    fn json(self, json: serde_json::Value) -> Request<Body> {
+        self.header("Content-Type", "application/json")
+            .body(Body::from(json.to_string()))
+            .expect("failed to build request")
+    }
+
+    fn empty_body(self) -> Request<Body> {
+        self.body(Body::empty()).expect("failed to build request")
+    }
+}
+
+pub async fn get_body_string(response: Response<BoxBody>) -> String {
+    let body = hyper::body::to_bytes(response.into_body())
+        .await
+        .expect("error reading response body");
+    String::from_utf8_lossy(&body[..]).to_string()
+}
+
+pub async fn get_body_json(response: &mut Response<BoxBody>) -> serde_json::Value {
+    let body = response.body_mut();
+
+    let mut bytes = Vec::new();
+
+    while let Some(res) = body.data().await {
+        let chunk = res.expect("error reading response body");
+
+        bytes.extend_from_slice(&chunk[..]);
+    }
+
+    serde_json::from_slice(&bytes).expect("failed to read response body as json")
 }

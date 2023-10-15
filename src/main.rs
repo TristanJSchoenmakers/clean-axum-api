@@ -1,9 +1,7 @@
-use api::{config::Config, routes};
-use axum::Extension;
+use api::config::Config;
 use clap::Parser;
 use sqlx::postgres::PgPoolOptions;
-use tower_http::trace::{self, DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse};
-use tracing::{info, Level};
+use tracing::info;
 
 #[tokio::main]
 async fn main() {
@@ -26,17 +24,7 @@ async fn main() {
 
     // Start running the API
     axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())
-        .serve(
-            routes::app()
-                .layer(
-                    trace::TraceLayer::new_for_http()
-                        .make_span_with(DefaultMakeSpan::new())
-                        .on_request(DefaultOnRequest::new().level(Level::INFO))
-                        .on_response(DefaultOnResponse::new().level(Level::INFO)),
-                )
-                .layer(Extension(db))
-                .into_make_service(),
-        )
+        .serve(api::app(db).into_make_service())
         .await
         .unwrap();
 }

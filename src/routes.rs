@@ -20,7 +20,7 @@ pub mod todo_item {
     pub mod update_todo_item;
 }
 
-pub fn app() -> Router {
+pub fn router() -> Router {
     Router::new()
         .route("/", get(|| async { "Api is running" }))
         .route("/todoitem", post(create_todo_item))

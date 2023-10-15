@@ -50,6 +50,23 @@
 //! cargo run
 //! ```
 
+use axum::{Extension, Router};
+use sqlx::PgPool;
+use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
+use tracing::Level;
+
 pub mod config;
 pub mod domain;
 pub mod routes;
+
+pub fn app(db: PgPool) -> Router {
+    Router::new()
+        .merge(routes::router())
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(DefaultMakeSpan::new())
+                .on_request(DefaultOnRequest::new().level(Level::INFO))
+                .on_response(DefaultOnResponse::new().level(Level::INFO)),
+        )
+        .layer(Extension(db))
+}
