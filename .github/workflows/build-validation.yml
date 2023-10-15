@@ -1,12 +1,8 @@
 # This pipelines runs when a pull request is mades and validates the build
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
+    branches: ["*"]
 
 env:
   DATABASE_URL: postgres://postgres:password@localhost/api
@@ -25,11 +21,6 @@ jobs:
           POSTGRES_DB: api
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
     - uses: actions/checkout@v3
@@ -44,7 +35,7 @@ jobs:
         crate: sqlx-cli
 
     - run: sqlx migrate run
-    - run: cargo build
-    - run: cargo test
+    - run: cargo build --bins --tests --release
+    - run: cargo test --release
     - run: cargo clippy --all-targets --all-features -- -D warnings
     - run: cargo fmt --all -- --check
