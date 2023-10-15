@@ -1,6 +1,8 @@
 # This pipelines runs when a pull request is mades and validates the build
 
 on:
+  push:
+    branches: main
   pull_request:
     branches: ["*"]
 
