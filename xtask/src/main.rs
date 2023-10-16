@@ -34,6 +34,8 @@ fn init(sh: &Shell) {
     cmd!(sh, "sqlx database setup").run().unwrap();
     // 2. Install Drill for load testing: https://github.com/fcsonline/drill
     cmd!(sh, "cargo install drill").run().unwrap();
+    // 3. Install cargo-readme for syncing lib.rs with Readme.md: https://github.com/webern/cargo-readme
+    cmd!(sh, "cargo install cargo-readme").run().unwrap();
 }
 
 fn check(sh: &Shell) {
@@ -69,10 +71,11 @@ fn doc_gen(sh: &Shell) {
 
     let dir = sh.current_dir();
     let readme_path = dir.to_str().unwrap();
+
     cmd!(
         sh,
         "cargo readme -o {readme_path}/README.md --no-title --no-indent-headings"
     )
-    .read()
+    .run()
     .unwrap();
 }

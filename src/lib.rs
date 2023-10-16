@@ -1,4 +1,4 @@
-//! <h1 align="center">clean-architecture (🔨 UNDER CONSTRUCTION)</h1>
+//! <h1 align="center">clean-axum-api (🔨 UNDER CONSTRUCTION)</h1>
 //!
 //! <p align="center">A cleanly designed Rust REST Api</p>
 //!
