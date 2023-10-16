@@ -22,7 +22,7 @@ jobs:
     #       *.cache-from=type=gha
     #       *.cache-to=type=gha,mode=max
     - run: sudo apt-get install sshpass
-    - run: sshpass -v -p ${{ secrets.DROPLET_PASSWORD }} scp -o StrictHostKeyChecking=no docker-compose.yml root@${{ vars.DROPLET_IP }}:~
+    - run: sshpass -v -p ${{ secrets.DROPLET_PASSWORD }} scp -o StrictHostKeyChecking=no docker-compose.yml root@${{ vars.DROPLET_IP }}
     - uses: appleboy/ssh-action@master
       with:
         host: ${{ vars.DROPLET_IP }}
