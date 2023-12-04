@@ -1,6 +1,7 @@
 use api::config::Config;
 use clap::Parser;
 use sqlx::postgres::PgPoolOptions;
+use tokio::net::TcpListener;
 use tracing::info;
 
 #[tokio::main]
@@ -22,9 +23,10 @@ async fn main() {
 
     info!("listening on localhost:8000");
 
-    // Start running the API
-    axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())
-        .serve(api::app(db).into_make_service())
-        .await
-        .unwrap();
+    axum::serve(
+        TcpListener::bind("0.0.0.0:8000").await.unwrap(),
+        api::app(db).into_make_service(),
+    )
+    .await
+    .unwrap();
 }
