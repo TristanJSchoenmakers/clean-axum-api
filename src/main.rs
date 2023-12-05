@@ -9,7 +9,7 @@ async fn main() {
     // Initialize the logger
     tracing_subscriber::fmt::init();
 
-    info!("Starting API");
+    info!("Starting API...");
 
     // Parse our configuration from the environment.
     let config = Config::parse();
