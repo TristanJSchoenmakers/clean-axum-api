@@ -1,0 +1,3 @@
+# Clippy configuration, read more: https://doc.rust-lang.org/clippy/configuration.html
+
+allow-unwrap-in-tests = true # Do not disallow unwrap in test code

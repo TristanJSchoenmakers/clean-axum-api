@@ -21,10 +21,10 @@ fn correct_request(pool: PgPool) -> sqlx::Result<()> {
         }
     });
 
-    let mut response = app.oneshot(request).await.unwrap();
+    let response = app.oneshot(request).await.unwrap();
 
     assert_eq!(response.status(), StatusCode::OK);
-    let body = get_body_json(&mut response).await;
+    let body = get_body_json(response).await;
     assert!(body["todo_item_id"].is_string());
     Ok(())
 }

@@ -1,10 +1,10 @@
 // This is imported by different tests that use different functions.
 #![allow(dead_code)]
 
-use axum::body::{Body, BoxBody};
+use axum::body::to_bytes;
+use axum::body::Body;
 use axum::http::{request, Request};
 use axum::response::Response;
-use hyper::body::HttpBody;
 
 pub trait RequestBuilderExt {
     fn json(self, json: serde_json::Value) -> Request<Body>;
@@ -24,23 +24,17 @@ impl RequestBuilderExt for request::Builder {
     }
 }
 
-pub async fn get_body_string(response: Response<BoxBody>) -> String {
-    let body = hyper::body::to_bytes(response.into_body())
+pub async fn get_body_string(response: Response<Body>) -> String {
+    let body = to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("error reading response body");
     String::from_utf8_lossy(&body[..]).to_string()
 }
 
-pub async fn get_body_json(response: &mut Response<BoxBody>) -> serde_json::Value {
-    let body = response.body_mut();
+pub async fn get_body_json(response: Response<Body>) -> serde_json::Value {
+    let body = to_bytes(response.into_body(), usize::MAX)
+        .await
+        .expect("error reading response body");
 
-    let mut bytes = Vec::new();
-
-    while let Some(res) = body.data().await {
-        let chunk = res.expect("error reading response body");
-
-        bytes.extend_from_slice(&chunk[..]);
-    }
-
-    serde_json::from_slice(&bytes).expect("failed to read response body as json")
+    serde_json::from_slice(&body[..]).expect("failed to read response body as json")
 }

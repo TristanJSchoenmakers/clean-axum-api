@@ -17,10 +17,10 @@ fn correct_request(pool: PgPool) -> sqlx::Result<()> {
     let app = api::app(pool);
     let request = Request::delete("/todoitem/11111111-1111-2222-3333-444444444444").empty_body();
 
-    let mut response = app.oneshot(request).await.unwrap();
+    let response = app.oneshot(request).await.unwrap();
 
     assert_eq!(response.status(), StatusCode::OK);
-    let body = get_body_json(&mut response).await;
+    let body = get_body_json(response).await;
     assert_eq!(body["success"].as_bool(), Some(true));
     Ok(())
 }
@@ -30,10 +30,10 @@ fn not_found(pool: PgPool) -> sqlx::Result<()> {
     let app = api::app(pool);
     let request = Request::delete("/todoitem/99999999-1111-2222-3333-000000000000").empty_body();
 
-    let mut response = app.oneshot(request).await.unwrap();
+    let response = app.oneshot(request).await.unwrap();
 
     assert_eq!(response.status(), StatusCode::NOT_FOUND);
-    let body = get_body_json(&mut response).await;
+    let body = get_body_json(response).await;
     assert_eq!(body["code"].as_str(), Some("NOT_FOUND"));
     assert_eq!(
         body["message"].as_str(),

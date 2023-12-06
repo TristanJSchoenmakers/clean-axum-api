@@ -24,9 +24,11 @@ async fn main() {
     info!("listening on localhost:8000");
 
     axum::serve(
-        TcpListener::bind("0.0.0.0:8000").await.unwrap(),
+        TcpListener::bind("0.0.0.0:8000")
+            .await
+            .expect("Could not bind TcpListener"),
         api::app(db).into_make_service(),
     )
     .await
-    .unwrap();
+    .expect("Unable to start/serve axum webserver");
 }

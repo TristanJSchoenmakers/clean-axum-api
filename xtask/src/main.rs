@@ -36,13 +36,15 @@ fn init(sh: &Shell) {
     cmd!(sh, "cargo install drill").run().unwrap();
     // 3. Install cargo-readme for syncing lib.rs with Readme.md: https://github.com/webern/cargo-readme
     cmd!(sh, "cargo install cargo-readme").run().unwrap();
+    // 4. Install cargo-audit for checking vulnerabilities in depedencies: https://github.com/RustSec/rustsec/tree/main/cargo-audit
+    cmd!(sh, "cargo install cargo-audit").run().unwrap();
 }
 
 fn check(sh: &Shell) {
     // 1. Check for clippy analyzer warnings/errors
     cmd!(
         sh,
-        "cargo clippy --all-targets --all-features -- -D warnings"
+        "cargo clippy --all-targets --all-features -- -D warnings -D clippy::unwrap_used"
     )
     .run()
     .unwrap();
@@ -51,9 +53,6 @@ fn check(sh: &Shell) {
     cmd!(sh, "cargo fmt --check").run().unwrap();
 
     // 3. check crate dependencies for security vulnerabilities
-    if cmd!(sh, "cargo audit --help").read().is_err() {
-        cmd!(sh, "cargo install cargo-audit").run().unwrap();
-    };
     cmd!(sh, "cargo audit").run().unwrap();
 }
 

@@ -25,10 +25,10 @@ fn correct_request(pool: PgPool) -> sqlx::Result<()> {
     let app = api::app(pool);
     let request = Request::get("/todoitem/22222222-1111-2222-3333-444444444444").empty_body();
 
-    let mut response = app.oneshot(request).await.unwrap();
+    let response = app.oneshot(request).await.unwrap();
 
     assert_eq!(response.status(), StatusCode::OK);
-    let body = get_body_json(&mut response).await;
+    let body = get_body_json(response).await;
     assert_eq!(
         body["id"].as_str(),
         Some("22222222-1111-2222-3333-444444444444")
@@ -47,10 +47,10 @@ fn not_found(pool: PgPool) -> sqlx::Result<()> {
     let app = api::app(pool);
     let request = Request::get("/todoitem/8ccf4b24-7b25-4781-8e4e-b22931dd6558").empty_body();
 
-    let mut response = app.oneshot(request).await.unwrap();
+    let response = app.oneshot(request).await.unwrap();
 
     assert_eq!(response.status(), StatusCode::NOT_FOUND);
-    let body = get_body_json(&mut response).await;
+    let body = get_body_json(response).await;
     assert_eq!(body["code"].as_str(), Some("NOT_FOUND"));
     assert_eq!(
         body["message"].as_str(),
