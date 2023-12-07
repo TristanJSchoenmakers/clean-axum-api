@@ -64,8 +64,8 @@ pub fn app(db: PgPool) -> Router {
         .merge(routes::router())
         .layer(
             TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::new())
-                .on_request(DefaultOnRequest::new().level(Level::INFO))
+                .make_span_with(DefaultMakeSpan::new().level(Level::INFO))
+                .on_request(DefaultOnRequest::new())
                 .on_response(DefaultOnResponse::new().level(Level::INFO)),
         )
         .layer(Extension(db))

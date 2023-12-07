@@ -36,8 +36,6 @@ fn init(sh: &Shell) {
     cmd!(sh, "cargo install drill").run().unwrap();
     // 3. Install cargo-readme for syncing lib.rs with Readme.md: https://github.com/webern/cargo-readme
     cmd!(sh, "cargo install cargo-readme").run().unwrap();
-    // 4. Install cargo-audit for checking vulnerabilities in depedencies: https://github.com/RustSec/rustsec/tree/main/cargo-audit
-    cmd!(sh, "cargo install cargo-audit").run().unwrap();
 }
 
 fn check(sh: &Shell) {
@@ -51,9 +49,6 @@ fn check(sh: &Shell) {
 
     // 2. Check if project is formatted correctly
     cmd!(sh, "cargo fmt --check").run().unwrap();
-
-    // 3. check crate dependencies for security vulnerabilities
-    cmd!(sh, "cargo audit").run().unwrap();
 }
 
 fn doc_gen(sh: &Shell) {

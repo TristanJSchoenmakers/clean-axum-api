@@ -5,4 +5,4 @@ xtask = "run -q --package xtask --"
 
 [env]
 DATABASE_URL = "postgres://postgres:password@localhost/api"
-RUST_LOG = "api=DEBUG,sqlx=DEBUG,tower_http=DEBUG,axum::rejection=trace"
+RUST_LOG = "api=INFO,sqlx=INFO,tower_http=INFO,axum::rejection=trace"

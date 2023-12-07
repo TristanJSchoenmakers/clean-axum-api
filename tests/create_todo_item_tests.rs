@@ -1,8 +1,7 @@
-use axum::http::Request;
+use axum::http::{Request, StatusCode};
 use common::get_body_json;
 use common::get_body_string;
 use common::RequestBuilderExt;
-use hyper::StatusCode;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use sqlx::PgPool;

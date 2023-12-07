@@ -1,9 +1,8 @@
-use axum::http::Request;
+use axum::http::{Request, StatusCode};
 use chrono::TimeZone;
 use chrono::Utc;
 use common::get_body_json;
 use common::RequestBuilderExt;
-use hyper::StatusCode;
 use pretty_assertions::assert_eq;
 use sqlx::PgPool;
 use tower::ServiceExt;

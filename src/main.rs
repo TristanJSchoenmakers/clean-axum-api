@@ -7,7 +7,10 @@ use tracing::info;
 #[tokio::main]
 async fn main() {
     // Initialize the logger
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt()
+        .compact()
+        .with_target(false)
+        .init();
 
     info!("Starting API...");
 
@@ -27,7 +30,7 @@ async fn main() {
         TcpListener::bind("0.0.0.0:8000")
             .await
             .expect("Could not bind TcpListener"),
-        api::app(db).into_make_service(),
+        api::app(db),
     )
     .await
     .expect("Unable to start/serve axum webserver");
