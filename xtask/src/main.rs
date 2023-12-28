@@ -48,7 +48,7 @@ fn check(sh: &Shell) {
     .unwrap();
 
     // 2. Check if project is formatted correctly
-    cmd!(sh, "cargo fmt --check").run().unwrap();
+    cmd!(sh, "cargo fmt --all -- --check").run().unwrap();
 }
 
 fn doc_gen(sh: &Shell) {

@@ -1,13 +1,18 @@
 use crate::domain::entities::todo_item::TodoItem;
 use crate::domain::value_objects::priority_level::PriorityLevel;
-use crate::routes::response::{internal_error, validation_error};
+use crate::routes::extractors::ValidatedJson;
+use crate::routes::response_builders::{internal_error, validation_error};
 use axum::http::StatusCode;
 use axum::Json;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use sqlx::{postgres::PgQueryResult, PgPool};
+use validator::Validate;
 
-#[derive(Deserialize)]
+#[derive(Validate, Deserialize)]
 pub struct CreateTodoItemRequest {
+    #[validate(length(min = 1, message = "must be atleast 1 character"))]
+    #[validate(length(max = 25, message = "cannot be longer than 25 characters"))]
     title: String,
     note: Option<String>,
     priority: PriorityLevel,
@@ -20,8 +25,8 @@ pub struct CreateTodoItemResponse {
 
 pub async fn create_todo_item(
     db: axum::Extension<PgPool>,
-    Json(body): Json<CreateTodoItemRequest>,
-) -> Result<Json<CreateTodoItemResponse>, (StatusCode, String)> {
+    ValidatedJson(body): ValidatedJson<CreateTodoItemRequest>,
+) -> Result<Json<CreateTodoItemResponse>, (StatusCode, axum::Json<Value>)> {
     let todo_item =
         TodoItem::new(body.title, body.note, body.priority).map_err(validation_error)?;
 

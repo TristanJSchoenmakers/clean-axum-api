@@ -1,3 +1,7 @@
+use crate::routes::response_builders::internal_error;
+use crate::{
+    domain::value_objects::priority_level::PriorityLevel, routes::extractors::ValidatedJson,
+};
 use axum::{
     extract::{Extension, Path},
     http::StatusCode,
@@ -5,17 +9,17 @@ use axum::{
 };
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 use sqlx::{postgres::PgQueryResult, PgPool};
 use uuid::Uuid;
+use validator::Validate;
 
-use crate::{
-    domain::value_objects::priority_level::PriorityLevel,
-    routes::response::{internal_error, json_error},
-};
-
-#[derive(Deserialize)]
+#[derive(Validate, Deserialize)]
 pub struct UpdateTodoItemRequest {
+    #[validate(length(min = 1, message = "must be atleast 1 character"))]
+    #[validate(length(max = 25, message = "cannot be longer than 25 characters"))]
     title: Option<String>,
+    #[validate(length(min = 1, message = "must be atleast 1 character"))]
     note: Option<String>,
     priority: Option<PriorityLevel>,
     done: Option<bool>,
@@ -29,8 +33,8 @@ pub struct UpdateTodoItemResponse {
 pub async fn update_todo_item(
     Path(todo_item_id): Path<Uuid>,
     db: Extension<PgPool>,
-    Json(body): Json<UpdateTodoItemRequest>,
-) -> Result<Json<UpdateTodoItemResponse>, (StatusCode, String)> {
+    ValidatedJson(body): ValidatedJson<UpdateTodoItemRequest>,
+) -> Result<Json<UpdateTodoItemResponse>, (StatusCode, axum::Json<Value>)> {
     let db_result: Result<PgQueryResult, sqlx::Error> = sqlx::query!(
         r#"
             UPDATE todo_items
@@ -55,10 +59,8 @@ pub async fn update_todo_item(
     let db_result = db_result.map_err(internal_error)?;
 
     if db_result.rows_affected() == 0 {
-        Err(json_error(
-            "NOT_FOUND".to_string(),
-            format!("Todo Item with id '{}' not found", todo_item_id),
-        ))
+        let body = json!({ "code": "NOT_FOUND".to_string(), "message": format!("Todo Item with id '{}' not found", todo_item_id) });
+        Err((StatusCode::NOT_FOUND, Json(body)))
     } else {
         Ok(Json(UpdateTodoItemResponse { success: true }))
     }

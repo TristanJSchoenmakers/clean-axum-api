@@ -1,9 +1,8 @@
+use crate::domain::value_objects::priority_level::PriorityLevel;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
-
-use crate::domain::value_objects::priority_level::PriorityLevel;
 
 /// The TodoItem entiry represents a single item in a to-do list.
 ///

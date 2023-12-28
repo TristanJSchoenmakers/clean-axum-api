@@ -39,5 +39,5 @@ jobs:
     - run: sqlx migrate run
     - run: cargo build --bins --tests --release
     - run: cargo test --release
-    - run: cargo clippy --all-targets --all-features -- -D warnings
+    - run: cargo clippy --all-targets --all-features -- -D warnings -D clippy::unwrap_used
     - run: cargo fmt --all -- --check
