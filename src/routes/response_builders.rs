@@ -24,7 +24,6 @@ pub fn validation_error(err: validator::ValidationErrors) -> (StatusCode, axum::
             (
                 k.to_string(),
                 v.iter()
-                    // .filter_map(|v2| v2.message.as_ref().map(|s| s.to_string()))
                     .filter_map(|v2| v2.message.as_ref().map(ToString::to_string))
                     .collect::<Vec<String>>(),
             )
