@@ -11,10 +11,10 @@ use axum::{
     Router,
 };
 
-pub mod extractors;
-pub mod response_builders;
+mod extractors;
+mod response_builders;
 
-pub mod todo_item {
+mod todo_item {
     pub mod create_todo_item;
     pub mod delete_todo_item;
     pub mod get_todo_item;
