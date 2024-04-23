@@ -11,8 +11,7 @@ use validator::Validate;
 pub struct TodoItem {
     pub id: Uuid,
     pub list_id: Uuid,
-    #[validate(length(min = 1, message = "must be atleast 1 character"))]
-    #[validate(length(max = 25, message = "cannot be longer than 25 characters"))]
+    #[validate(length(min = 1, max = 25, message = "must be between 1 and 25 characters"))]
     pub title: String,
     pub note: Option<String>,
     pub priority: PriorityLevel,
@@ -72,7 +71,7 @@ mod tests {
     fn new_title_empty() {
         let result = TodoItem::new(" ".to_string(), None, PriorityLevel::Low);
         let err = format!("{}", result.unwrap_err());
-        assert_eq!(err, "title: must be atleast 1 character");
+        assert_eq!(err, "title: must be between 1 and 25 characters");
     }
 
     #[test]
@@ -84,6 +83,6 @@ mod tests {
         );
 
         let err = format!("{}", result.unwrap_err());
-        assert_eq!(err, "title: cannot be longer than 25 characters");
+        assert_eq!(err, "title: must be between 1 and 25 characters");
     }
 }

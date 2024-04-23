@@ -16,8 +16,7 @@ use validator::Validate;
 
 #[derive(Validate, Deserialize)]
 pub struct UpdateTodoItemRequest {
-    #[validate(length(min = 1, message = "must be atleast 1 character"))]
-    #[validate(length(max = 25, message = "cannot be longer than 25 characters"))]
+    #[validate(length(min = 1, max = 25, message = "must be between 1 and 25 characters"))]
     title: Option<String>,
     #[validate(length(min = 1, message = "must be atleast 1 character"))]
     note: Option<String>,

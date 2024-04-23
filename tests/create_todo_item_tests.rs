@@ -65,7 +65,7 @@ fn invalid_domain(pool: PgPool) -> sqlx::Result<()> {
             {
                 "code": "VALIDATION_ERROR",
                 "errors": {
-                    "title": ["cannot be longer than 25 characters"]},
+                    "title": ["must be between 1 and 25 characters"]},
                 "message": "Validation error occurred"
             }
         }
