@@ -12,19 +12,19 @@ repository = "https://github.com/TristanJSchoenmakers/clean-architecture"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = "0.7"
+axum = "0.8"
 chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4.5", features = ["derive", "env"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-sqlx  = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid"] }
-tokio = { version = "1.37", features = ["full"] }
-tower = { version = "0.4", features = ["util"] }
-tower-http = { version = "0.5", features = ["trace"] }
+sqlx  = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid"] }
+tokio = { version = "1.42", features = ["full"] }
+tower = { version = "0.5", features = ["util"] }
+tower-http = { version = "0.6", features = ["trace"] }
 tracing = "0.1"
 tracing-subscriber = "0.3"
-uuid  = { version = "1.8", features = [ "v4", "serde" ] }
-validator = { version = "0.18", features = ["derive"] }
+uuid  = { version = "1.11", features = [ "v4", "serde" ] }
+validator = { version = "0.19", features = ["derive"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4"

@@ -3,7 +3,6 @@
 //! [`axum-extractor`]: https://docs.rs/axum/latest/axum/extract/index.html
 
 use axum::{
-    async_trait,
     extract::{rejection::JsonRejection, FromRequest, MatchedPath, Request},
     http::StatusCode,
     RequestPartsExt,
@@ -19,7 +18,6 @@ use validator::Validate;
 /// [`validator`]: https://docs.rs/validator/latest/validator/
 pub struct ValidatedJson<T>(pub T);
 
-#[async_trait]
 impl<S, T> FromRequest<S> for ValidatedJson<T>
 where
     axum::Json<T>: FromRequest<S, Rejection = JsonRejection>,
