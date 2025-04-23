@@ -3,14 +3,14 @@ use crate::{
     domain::value_objects::priority_level::PriorityLevel, routes::extractors::ValidatedJson,
 };
 use axum::{
+    Json,
     extract::{Extension, Path},
     http::StatusCode,
-    Json,
 };
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
-use sqlx::{postgres::PgQueryResult, PgPool};
+use serde_json::{Value, json};
+use sqlx::{PgPool, postgres::PgQueryResult};
 use uuid::Uuid;
 use validator::Validate;
 

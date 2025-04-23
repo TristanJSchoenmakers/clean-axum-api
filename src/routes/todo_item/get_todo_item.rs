@@ -1,8 +1,8 @@
 use crate::domain::entities::todo_item::TodoItem;
 use crate::domain::value_objects::priority_level::PriorityLevel;
 use crate::routes::response_builders::internal_error;
-use axum::{extract::Path, http::StatusCode, Json};
-use serde_json::{json, Value};
+use axum::{Json, extract::Path, http::StatusCode};
+use serde_json::{Value, json};
 use sqlx::PgPool;
 use uuid::Uuid;
 

@@ -1,9 +1,9 @@
 // This is imported by different tests that use different functions.
 #![allow(dead_code)]
 
-use axum::body::to_bytes;
 use axum::body::Body;
-use axum::http::{request, Request};
+use axum::body::to_bytes;
+use axum::http::{Request, request};
 use axum::response::Response;
 
 pub trait RequestBuilderExt {

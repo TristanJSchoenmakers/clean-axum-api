@@ -36,6 +36,8 @@ fn init(sh: &Shell) {
     cmd!(sh, "cargo install drill").run().unwrap();
     // 3. Install cargo-readme for syncing lib.rs with Readme.md: https://github.com/webern/cargo-readme
     cmd!(sh, "cargo install cargo-readme").run().unwrap();
+    // 4. Install cargo-nextest a better test runner: https://github.com/nextest-rs/nextest
+    cmd!(sh, "cargo install  ycargo-nextest").run().unwrap();
 }
 
 fn check(sh: &Shell) {

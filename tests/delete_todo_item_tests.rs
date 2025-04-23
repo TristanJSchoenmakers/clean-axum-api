@@ -1,6 +1,6 @@
 use axum::http::{Request, StatusCode};
-use common::get_body_json;
 use common::RequestBuilderExt;
+use common::get_body_json;
 use sqlx::PgPool;
 use tower::ServiceExt;
 

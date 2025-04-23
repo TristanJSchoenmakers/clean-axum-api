@@ -2,6 +2,7 @@
 
 [alias]
 xtask = "run -q --package xtask --"
+t = "nextest run"
 
 [env]
 DATABASE_URL = "postgres://postgres:password@localhost/api"

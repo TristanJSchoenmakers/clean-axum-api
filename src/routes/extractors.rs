@@ -3,11 +3,11 @@
 //! [`axum-extractor`]: https://docs.rs/axum/latest/axum/extract/index.html
 
 use axum::{
-    extract::{rejection::JsonRejection, FromRequest, MatchedPath, Request},
-    http::StatusCode,
     RequestPartsExt,
+    extract::{FromRequest, MatchedPath, Request, rejection::JsonRejection},
+    http::StatusCode,
 };
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::collections::HashMap;
 use validator::Validate;
 

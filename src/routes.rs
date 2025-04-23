@@ -7,8 +7,8 @@ use self::todo_item::{
     get_todo_item::get_todo_item, update_todo_item::update_todo_item,
 };
 use axum::{
-    routing::{delete, get, patch, post},
     Router,
+    routing::{delete, get, patch, post},
 };
 
 mod extractors;

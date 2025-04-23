@@ -2,11 +2,11 @@ use crate::domain::entities::todo_item::TodoItem;
 use crate::domain::value_objects::priority_level::PriorityLevel;
 use crate::routes::extractors::ValidatedJson;
 use crate::routes::response_builders::{internal_error, validation_error};
-use axum::http::StatusCode;
 use axum::Json;
+use axum::http::StatusCode;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sqlx::{postgres::PgQueryResult, PgPool};
+use sqlx::{PgPool, postgres::PgQueryResult};
 use validator::Validate;
 
 #[derive(Validate, Deserialize)]

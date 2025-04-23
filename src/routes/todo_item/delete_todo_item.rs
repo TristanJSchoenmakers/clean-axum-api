@@ -1,8 +1,8 @@
 use crate::routes::response_builders::internal_error;
-use axum::{extract::Path, http::StatusCode, Json};
+use axum::{Json, extract::Path, http::StatusCode};
 use serde::Serialize;
-use serde_json::{json, Value};
-use sqlx::{postgres::PgQueryResult, PgPool};
+use serde_json::{Value, json};
+use sqlx::{PgPool, postgres::PgQueryResult};
 use uuid::Uuid;
 
 #[derive(Serialize)]
