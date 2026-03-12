@@ -17,34 +17,40 @@
 
 - [Axum](https://github.com/tokio-rs/axum)
 - [Sqlx](https://github.com/launchbadge/sqlx)
-- [Xtask](https://github.com/matklad/cargo-xtask)
+- [Drill](https://github.com/fcsonline/drill)
 
 
 ## Getting started <span style="color:crimson">▶</span>
 
 Prerequisites for running locally:
 
-- [cargo](https://www.rust-lang.org/tools/install)
+- [Nix](https://nixos.org/download/)
 - [docker (compose)](https://docs.docker.com/engine/install/)
 
 
-#### 1 - Run Docker compose
+#### 1 - Enter the development shell
+
+This project uses a Nix development shell to provide the required tooling.
+
+```bash
+nix develop
+```
+
+#### 2 - Start the database
 
 ```bash
 docker compose up --detach
 ```
 
 
-#### 2 - Initialize
-
-Run `cargo xtask --help` for a list of the other xtask commands
+#### 3 - Setup the database
 
 ```bash
-cargo xtask init
+sqlx database setup
 ```
 
 
-#### 3 - Running the API
+#### 4 - Running the API
 
 ```bash
 cargo run

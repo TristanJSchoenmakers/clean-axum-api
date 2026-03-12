@@ -1,9 +1,0 @@
-# Cargo configuration keys and their definitions at https://doc.rust-lang.org/cargo/reference/config.html
-
-[alias]
-xtask = "run -q --package xtask --"
-t = "nextest run"
-
-[env]
-DATABASE_URL = "postgres://postgres:password@localhost/api"
-RUST_LOG = "api=INFO,sqlx=INFO,tower_http=INFO,axum::rejection=trace"
